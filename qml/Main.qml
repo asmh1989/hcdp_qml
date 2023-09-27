@@ -26,9 +26,31 @@ Window {
 
             }
 
-            Header {
+            HcdpContent {
 
             }
+
+//            Row {
+//                spacing: 10
+//                anchors.centerIn: parent
+
+//                Text { text: qsTr("请输入密码：") ; font.pointSize: 15
+//                    verticalAlignment: Text.AlignVCenter }
+
+//                Rectangle {
+//                    width: 30
+//                    height: 30
+//                    color: "lightgrey"
+//                    border.color: "grey"
+
+//                    TextInput {
+//                        anchors.fill: parent
+//                        anchors.margins: 2
+//                        font.pointSize: 15
+//                        focus: true
+//                    }
+//                }
+//            }
         }
     }
 

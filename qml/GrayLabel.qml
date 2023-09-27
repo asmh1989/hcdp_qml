@@ -9,7 +9,7 @@ Label {
     background: Rectangle {
         color: '#C0C0C0'
     }
-    anchors.verticalCenter: parent.verticalCenter
+//    anchors.verticalCenter: parent.verticalCenter
 
 //    text: title
     horizontalAlignment: Text.AlignHCenter

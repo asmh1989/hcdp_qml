@@ -2,10 +2,12 @@ import QtQuick
 import QtQuick.Controls
 
 
-Item {
+Control {
     width: parent.width
     height: 64
-    Rectangle{
+    padding: 16
+
+    background: Rectangle{
         color: 'transparent'
         border.color: '#50A0FF'
         border.width: 1
@@ -13,9 +15,8 @@ Item {
         anchors.fill: parent
     }
 
-    Row {
-        padding: 16
-        height: 30
+    contentItem:Row {
+        height: 24
         anchors.verticalCenter: parent.verticalCenter
         spacing: 6
         GrayLabel {

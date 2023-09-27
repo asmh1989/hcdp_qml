@@ -18,6 +18,8 @@ qt_add_qml_module(apphcdp
     QML_FILES qml/Main.qml
     QML_FILES qml/Header.qml
     QML_FILES qml/GrayLabel.qml
+    QML_FILES qml/HcdpContent.qml
+    QML_FILES qml/HcdpInput.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
