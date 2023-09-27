@@ -2,23 +2,20 @@ import QtQuick
 import QtQuick.Controls
 
 
-Control {
+Rectangle{
+    color: 'transparent'
+    border.color: '#50A0FF'
+    border.width: 1
+    radius: 4
     width: parent.width
     height: 64
-    padding: 16
 
-    background: Rectangle{
-        color: 'transparent'
-        border.color: '#50A0FF'
-        border.width: 1
-        radius: 4
-        anchors.fill: parent
-    }
-
-    contentItem:Row {
-        height: 24
+    Row {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 6
+        anchors.fill: parent
+        anchors.margins: 16
+
         GrayLabel {
             text: qsTr("SerialPort")
         }

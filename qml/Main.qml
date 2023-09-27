@@ -11,16 +11,12 @@ Window {
 
     readonly property int margin: 10
 
-    Control {
-        padding: margin
+    Rectangle {
         anchors.fill: parent
-
-        background: Rectangle {
+        color: '#F3F9FF'
+        Column {
             anchors.fill: parent
-            color: '#F3F9FF'
-        }
-
-        contentItem: Column {
+            anchors.margins: margin
             spacing: margin
             Header {
 
@@ -30,28 +26,27 @@ Window {
 
             }
 
-//            Row {
-//                spacing: 10
-//                anchors.centerIn: parent
+            //            Row {
+            //                spacing: 10
+            //                anchors.centerIn: parent
 
-//                Text { text: qsTr("请输入密码：") ; font.pointSize: 15
-//                    verticalAlignment: Text.AlignVCenter }
+            //                Text { text: qsTr("请输入密码：") ; font.pointSize: 15
+            //                    verticalAlignment: Text.AlignVCenter }
 
-//                Rectangle {
-//                    width: 30
-//                    height: 30
-//                    color: "lightgrey"
-//                    border.color: "grey"
+            //                Rectangle {
+            //                    width: 30
+            //                    height: 30
+            //                    color: "lightgrey"
+            //                    border.color: "grey"
 
-//                    TextInput {
-//                        anchors.fill: parent
-//                        anchors.margins: 2
-//                        font.pointSize: 15
-//                        focus: true
-//                    }
-//                }
-//            }
+            //                    TextInput {
+            //                        anchors.fill: parent
+            //                        anchors.margins: 2
+            //                        font.pointSize: 15
+            //                        focus: true
+            //                    }
+            //                }
+            //            }
         }
     }
-
 }
