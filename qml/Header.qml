@@ -9,6 +9,8 @@ Rectangle{
     radius: 4
     width: parent.width
 
+    property bool isOpen: false
+
     Row {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 6
@@ -21,10 +23,13 @@ Rectangle{
         }
 
         ComboBox {
-            width: 160
+            id: port
+            width: 200
+            editable: true
+            selectTextByMouse: true
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
-            model:["First", "Second", "Third"]
+            model:sm.getSerialPortList()
         }
 
         Button {
@@ -32,6 +37,11 @@ Rectangle{
             width: 80
             anchors.verticalCenter: parent.verticalCenter
             text:qsTr("Refresh")
+
+            onClicked: ()=> {
+                           //                           console.log("refresh ...")
+                           port.model = sm.getSerialPortList();
+                       }
         }
 
         GrayLabel {
@@ -40,6 +50,7 @@ Rectangle{
         }
 
         ComboBox {
+            id: rate
             width: 80
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -48,10 +59,27 @@ Rectangle{
         }
 
         Button {
+            id: btn
             height: parent.height
             width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("OpenPort")
+            text:qsTr("OpenSerial")
+            onClicked: ()=> {
+                           if(!isOpen){
+                               var res = sm.openSerialPort(port.currentIndex, rate.currentValue);
+                               if (res.length === 0) {
+                                   isOpen = true;
+                                   btn.text = "CloseSerial"
+                               } else {
+                                   console.log("err : "+ res);
+                               }
+                           } else {
+                               sm.closeSerialPort();
+                               isOpen = false;
+                               btn.text = "OpenSerial"
+                           }
+
+                       }
         }
 
         Button {
@@ -74,6 +102,10 @@ Rectangle{
             anchors.verticalCenter: parent.verticalCenter
             text: qsTr("CircleSend")
         }
+    }
+
+    Connections {
+        target: sm
     }
 
 }

@@ -5,7 +5,7 @@ project(hcdp VERSION 0.1 LANGUAGES CXX)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Core Qml)
+find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Core Qml SerialPort)
 
 
 qt_add_executable(apphcdp
@@ -21,6 +21,7 @@ qt_add_qml_module(apphcdp
     QML_FILES qml/HcdpContent.qml
     QML_FILES qml/HcdpInput.qml
     QML_FILES qml/Footer.qml
+    SOURCES src/singletonmanager.h src/singletonmanager.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -38,6 +39,7 @@ target_link_libraries(apphcdp
     PRIVATE Qt6::Quick
     Qt6::Core
     Qt6::Qml
+    Qt6::SerialPort
 )
 
 include(GNUInstallDirs)

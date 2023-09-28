@@ -39,4 +39,15 @@ Window {
 
         }
     }
+
+    Component.onCompleted: {
+         console.log("123 ")
+     }
+
+    Connections {
+        target: sm
+        function onCallbackSignal(){
+            console.log("Callback from C++:", message);
+        }
+    }
 }
