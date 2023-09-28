@@ -22,6 +22,8 @@ qt_add_qml_module(apphcdp
     QML_FILES qml/HcdpInput.qml
     QML_FILES qml/Footer.qml
     SOURCES src/singletonmanager.h src/singletonmanager.cpp
+    QML_FILES qml/ToastManager.qml
+    QML_FILES qml/Toast.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

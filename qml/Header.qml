@@ -1,7 +1,6 @@
 import QtQuick
 import QtQuick.Controls
 
-
 Rectangle{
     color: 'transparent'
     border.color: '#50A0FF'
@@ -71,7 +70,8 @@ Rectangle{
                                    isOpen = true;
                                    btn.text = "CloseSerial"
                                } else {
-                                   console.log("err : "+ res);
+//                                   console.log("err : "+ res);
+                                   sm.showToast(res);
                                }
                            } else {
                                sm.closeSerialPort();
@@ -103,6 +103,11 @@ Rectangle{
             text: qsTr("CircleSend")
         }
     }
+
+//    Component.onCompleted: {
+//        sm.onShowToast.connect(showToast2);
+//    }
+
 
     Connections {
         target: sm

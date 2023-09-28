@@ -1,6 +1,6 @@
 // SingletonManager.cpp
 #include "singletonmanager.h"
-#include<QDebug>
+#include <QDebug>
 
 
 SingletonManager* SingletonManager::m_instance = nullptr;
@@ -9,6 +9,12 @@ SingletonManager::SingletonManager() {
 }
 
 SingletonManager::~SingletonManager(){
+}
+
+void SingletonManager::receive()
+{
+    QByteArray data = serial.readAll();
+    qDebug() << "Received data: " << data;
 }
 
 QStringList  SingletonManager::getSerialPortList() {
@@ -37,7 +43,6 @@ QString SingletonManager::openSerialPort(int port, int rate){
         return tr("Can't open %1").arg(p.portName());
     }
     if (!serial.open(QIODevice::ReadWrite)) {
-
         return tr("Can't open %1, error code %2")
             .arg(p.portName()).arg(serial.error());
     } else {
@@ -63,6 +68,10 @@ SingletonManager* SingletonManager::instance()
 int SingletonManager::constantValue() const
 {
     return m_constantValue;
+}
+
+void SingletonManager::showToast(QString msg) {
+    emit onShowToast(msg);
 }
 
 void SingletonManager::doSomething()

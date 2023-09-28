@@ -19,6 +19,8 @@ public:
 
     // 接口函数
     Q_INVOKABLE void doSomething();
+    Q_INVOKABLE void showToast(QString msg);
+
 
     Q_INVOKABLE QStringList  getSerialPortList();
 
@@ -33,10 +35,13 @@ public:
 
     // 设置回调函数
     void setCallback(const CallbackFunction& callback);
+public slots:
+    void receive();
 
 signals:
     // 信号用于触发回调
     void callbackSignal(const QString& message);
+    void onShowToast(QString msg);
 
 private:
     explicit SingletonManager();

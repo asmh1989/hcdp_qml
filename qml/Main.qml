@@ -12,6 +12,11 @@ Window {
 
     readonly property int margin: 10
 
+    ToastManager {
+        id: toast
+    }
+
+
     Rectangle {
         anchors.fill: parent
         color: '#F3F9FF'
@@ -41,13 +46,17 @@ Window {
     }
 
     Component.onCompleted: {
-         console.log("123 ")
-     }
+        sm.onShowToast.connect(showToast);
+    }
+
+    function showToast(msg) {
+        console.log("showToast msg = "+ msg);
+        toast.show(msg, 1500);
+
+    }
+
 
     Connections {
         target: sm
-        function onCallbackSignal(){
-            console.log("Callback from C++:", message);
-        }
     }
 }
