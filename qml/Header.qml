@@ -8,7 +8,6 @@ Rectangle{
     border.width: 1
     radius: 4
     width: parent.width
-    height: 60
 
     Row {
         anchors.verticalCenter: parent.verticalCenter

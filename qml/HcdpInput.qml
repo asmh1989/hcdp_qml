@@ -14,5 +14,6 @@ Rectangle {
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
         text: myInput
+        selectByMouse: true
     }
 }

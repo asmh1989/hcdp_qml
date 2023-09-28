@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
+import QtQuick.Layouts
 
 Window {
     width: 1000
@@ -14,39 +15,28 @@ Window {
     Rectangle {
         anchors.fill: parent
         color: '#F3F9FF'
-        Column {
+        Item {
             anchors.fill: parent
             anchors.margins: margin
-            spacing: margin
             Header {
+                id: header
+                height: 60
 
             }
 
             HcdpContent {
-
+                id: content
+                anchors.top: header.bottom
+                anchors.topMargin: margin
+                height: parent.height * 0.42
             }
 
-            //            Row {
-            //                spacing: 10
-            //                anchors.centerIn: parent
+            Footer {
+                anchors.top: content.bottom
+                anchors.topMargin: margin
+                anchors.bottom: parent.bottom
+            }
 
-            //                Text { text: qsTr("请输入密码：") ; font.pointSize: 15
-            //                    verticalAlignment: Text.AlignVCenter }
-
-            //                Rectangle {
-            //                    width: 30
-            //                    height: 30
-            //                    color: "lightgrey"
-            //                    border.color: "grey"
-
-            //                    TextInput {
-            //                        anchors.fill: parent
-            //                        anchors.margins: 2
-            //                        font.pointSize: 15
-            //                        focus: true
-            //                    }
-            //                }
-            //            }
         }
     }
 }

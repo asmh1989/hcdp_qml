@@ -10,7 +10,6 @@ Rectangle{
     border.width: 1
     radius: 4
     width: parent.width
-    height: parent.height * 0.5
 
     Item {
         anchors.leftMargin: 16
