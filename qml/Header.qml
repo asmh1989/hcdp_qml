@@ -8,7 +8,7 @@ Rectangle{
     border.width: 1
     radius: 4
     width: parent.width
-    height: 64
+    height: 60
 
     Row {
         anchors.verticalCenter: parent.verticalCenter
@@ -18,6 +18,7 @@ Rectangle{
 
         GrayLabel {
             text: qsTr("SerialPort")
+            width: 80
         }
 
         ComboBox {
@@ -36,6 +37,7 @@ Rectangle{
 
         GrayLabel {
             text: qsTr("Rate")
+            width: 60
         }
 
         ComboBox {

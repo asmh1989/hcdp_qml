@@ -5,7 +5,8 @@ Label {
 //    property string title: ""
 
     height: parent.height
-    padding: 10
+//    padding: 8
+
     background: Rectangle {
         color: '#C0C0C0'
     }
