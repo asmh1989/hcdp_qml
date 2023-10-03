@@ -3,10 +3,11 @@
 #include <QQmlContext>
 #include "singletonmanager.h"
 
-
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
+
+
 
     QQmlApplicationEngine engine;
     // 注册C++对象到QML引擎

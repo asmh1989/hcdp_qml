@@ -1,11 +1,13 @@
 // SingletonManager.cpp
 #include "singletonmanager.h"
 #include <QDebug>
+#include "utils.h"
 
 
 SingletonManager* SingletonManager::m_instance = nullptr;
 
 SingletonManager::SingletonManager() {
+    utils::encode("30", "05", "20010001000118");
 }
 
 SingletonManager::~SingletonManager(){
