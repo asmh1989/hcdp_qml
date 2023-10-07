@@ -138,6 +138,9 @@ Rectangle{
                             width: h_save.width
                             text: qsTr("Save")
                             onClicked: ()=> {
+                                           var d = sm.saveSerialDataList;
+                                           d.push(modelData)
+                                           sm.saveSerialDataList = d
                                        }
                         }
 
@@ -160,13 +163,13 @@ Rectangle{
 
     Component.onCompleted: {
         // 将 QVariant 转换为 JSON 字符串
-//        var jsonStr = JSON.stringify(sm.serialDataList);
+        //        var jsonStr = JSON.stringify(sm.serialDataList);
 
-//        // 将 JSON 字符串解析为 JavaScript 对象
-//        var jsonObject = JSON.parse(jsonStr);
+        //        // 将 JSON 字符串解析为 JavaScript 对象
+        //        var jsonObject = JSON.parse(jsonStr);
 
         // 打印 JSON 对象
-//        console.log("JSON Object:", jsonStr, "  ");
+        //        console.log("JSON Object:", jsonStr, "  ");
     }
 
     Connections {

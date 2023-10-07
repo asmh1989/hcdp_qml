@@ -7,9 +7,6 @@ import QtQuick.Layouts
 
 Rectangle{
     color: 'transparent'
-    border.color: '#50A0FF'
-    border.width: 1
-    radius: 4
 
     Item {
         anchors.leftMargin: 16
@@ -27,6 +24,8 @@ Rectangle{
                 id: left
                 border.color: 'black'
                 border.width: 1
+                radius: 4
+
                 height: parent.height
                 anchors.left: parent.left
                 width: parent.width* 0.45
@@ -42,11 +41,25 @@ Rectangle{
                     ScrollBar.vertical: ScrollBar {
                         active: true
                     }
-                    header: Text {
-                        text: " 先选中, 在右键进行操作"
-                        wrapMode: Text.Wrap
-                        font.pointSize: 10
-                        font.family: "Consolas"
+                    header: Item {
+                        width: listView.width
+                        height: 20
+                        Text {
+                            height: parent.height - 1
+                            id: header
+                            text: " 先选中, 在右键进行操作"
+                            wrapMode: Text.Wrap
+                            font.pointSize: 10
+                            font.family: "Consolas"
+                        }
+
+                        Rectangle {
+                            anchors.top: header.bottom
+                            height: 1
+                            width: parent.width
+                            color: 'gray'
+                        }
+
                     }
 
                     model: sm.saveSerialDataList
@@ -60,7 +73,7 @@ Rectangle{
                         Rectangle {
                             id:rectangle
                             width: parent.width
-                            height: parent.height
+                            height: parent.height -1
                             // 根据选中状态设置背景颜色
                             color: listView.currentIndex === index ? "lightblue" : "white"
 
@@ -76,38 +89,34 @@ Rectangle{
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
                                 onClicked: (mouse) => {
-                                    if (mouse.button === Qt.LeftButton) {
-                                        listView.currentIndex = index;
-                                    } else if (mouse.button === Qt.RightButton && listView.currentIndex == index ) {
-                                        // 计算鼠标点击的位置，并将位置信息传递给Menu
-                                        contextMenu.x = mouseArea.mouseX;
-                                        contextMenu.y = mouseArea.mouseY;
-                                        contextMenu.open();                                    }
+                                               if (mouse.button === Qt.LeftButton) {
+                                                   listView.currentIndex = index;
+                                               } else if (mouse.button === Qt.RightButton && listView.currentIndex == index ) {
+                                                   // 计算鼠标点击的位置，并将位置信息传递给Menu
+                                                   contextMenu.x = mouseArea.mouseX;
+                                                   contextMenu.y = mouseArea.mouseY;
+                                                   contextMenu.open();                                    }
 
-                                }
+                                           }
 
                             }
 
                             Menu {
                                 id: contextMenu
                                 MenuItem {
-                                    text: "Action 1"
+                                    text: "插入到发送列表"
                                     onTriggered: {
                                         console.log("Action 1 triggered for item:", model.name);
                                     }
                                 }
                                 MenuItem {
-                                    text: "Action 2"
+                                    text: "删除这一条"
                                     onTriggered: {
-                                        console.log("Action 2 triggered for item:", model.name);
+                                        var d = sm.saveSerialDataList
+                                        d.splice(listView.currentIndex, 1)
+                                        sm.saveSerialDataList =  d
                                     }
                                 }
-
-//                                function open(x, y) {
-//                                    contextMenu.x = x;
-//                                    contextMenu.y = y;
-//                                    contextMenu.open();
-//                                }
                             }
                         }
 
@@ -124,6 +133,13 @@ Rectangle{
                             to: "selected"
                             reversible: true
                             ColorAnimation { properties: "color"; duration: 200 }
+                        }
+
+                        Rectangle {
+                            anchors.top: rectangle.bottom
+                            height: 1
+                            width: parent.width
+                            color: 'gray'
                         }
                     }
 
