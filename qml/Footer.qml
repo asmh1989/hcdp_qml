@@ -35,15 +35,19 @@ Rectangle{
                     id: listView
                     anchors.fill: parent
                     anchors.margins: 1
-                    boundsBehavior: Flickable.StopAtBounds
-                    boundsMovement: Flickable.StopAtBounds
+//                    boundsBehavior: Flickable.StopAtBounds
+//                    boundsMovement: Flickable.StopAtBounds
                     clip: true
+                    snapMode: ListView.SnapToItem
                     ScrollBar.vertical: ScrollBar {
                         active: true
                     }
-                    header: Item {
+                    header: Rectangle {
                         width: listView.width
                         height: 20
+                        color: 'white'
+                        z: 2
+
                         Text {
                             height: parent.height - 1
                             id: header
@@ -61,6 +65,7 @@ Rectangle{
                         }
 
                     }
+                    headerPositioning: ListView.OverlayHeader
 
                     model: sm.saveSerialDataList
                     //modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
@@ -106,7 +111,6 @@ Rectangle{
                                 MenuItem {
                                     text: "插入到发送列表"
                                     onTriggered: {
-                                        console.log("Action 1 triggered for item:", model.name);
                                     }
                                 }
                                 MenuItem {
