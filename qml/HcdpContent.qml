@@ -9,7 +9,6 @@ Rectangle{
     border.color: '#50A0FF'
     border.width: 1
     radius: 4
-    width: parent.width
 
     Item {
         anchors.leftMargin: 16
@@ -98,8 +97,8 @@ Rectangle{
                 model: ListModel {
                     ListElement {
                         address: "30"
-                        code: "06"
-                        sdata: "20030010 0000"
+                        code: "05"
+                        sdata: "20010001 0001 12"
                         circleSend: false
                         name: "【获取电源数据】"
                     }
@@ -126,38 +125,6 @@ Rectangle{
                         circleSend: false
                         name: "【获取电源数据】"
                     }
-
-//                    ListElement {
-//                        address: "30"
-//                        code: "06"
-//                        sdata: "20030010 0000"
-//                        circleSend: false
-//                        name: "【获取电源数据】"
-//                    }
-
-//                    ListElement {
-//                        address: "36"
-//                        code: "06"
-//                        sdata: "20030010 0000"
-//                        circleSend: false
-//                        name: "【获取电源数据】"
-//                    }
-
-//                    ListElement {
-//                        address: "37"
-//                        code: "06"
-//                        sdata: "20030010 0000"
-//                        circleSend: false
-//                        name: "【获取电源数据】"
-//                    }
-
-//                    ListElement {
-//                        address: "38"
-//                        code: "06"
-//                        sdata: "20030010 0000"
-//                        circleSend: false
-//                        name: "【获取电源数据】"
-//                    }
                 }
                 delegate:Column {
                     height: header.height+6
@@ -167,14 +134,17 @@ Rectangle{
                         height: header.height
 
                         HcdpInput {
+                            id: s_addr
                             width: h_addr.width
                             myInput: address
                         }
                         HcdpInput {
+                            id: s_code
                             width: h_code.width
                             myInput: code
                         }
                         HcdpInput {
+                            id: s_data
                             width: h_data.width
                             myInput: sdata
                         }
@@ -183,6 +153,7 @@ Rectangle{
                             height: parent.height
                             width: h_circle.width
                             CheckBox {
+                                id: checked
                                 anchors.centerIn: parent
                                 checked: circleSend
                             }
@@ -198,10 +169,10 @@ Rectangle{
                             width: h_save.width
                             text: qsTr("Save")
                             onClicked: ()=> {
-                                           console.log("h_addr.height: "+ h_addr.height
-                                                       +" header.height =" + header.height
-                                                       +" listView.height = "+ listView.height
-                                                       +" root.height = "+ root.height)
+//                                           console.log("h_addr.height: "+ h_addr.height
+//                                                       +" header.height =" + header.height
+//                                                       +" listView.height = "+ listView.height
+//                                                       +" root.height = "+ root.height)
                                        }
                         }
 
@@ -209,10 +180,21 @@ Rectangle{
                             height: parent.height
                             width: h_click.width
                             text: qsTr("ClickSend")
+                            onClicked: ()=> {
+                                           var res = sm.sendData(s_addr.myInput, s_code.myInput, s_data.myInput, checked.checked);
+                                           if (res.length !== 0) {
+                                               sm.showGlobalToast(res);
+                                           }
+                                       }
                         }
                     }
                 }
             }
         }
     }
+
+    Connections {
+        target: sm
+    }
+
 }

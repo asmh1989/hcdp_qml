@@ -5,12 +5,13 @@
 #include "qaesencryption.h"
 #include "model.h"
 
+
 utils::utils()
 {
 
 }
 
-QString formatQByte(QByteArray &array) {
+QString utils::formatQByte(QByteArray &array) {
     QString data_with_crc_hex;
     for (char byte : array) {
         data_with_crc_hex.append(QString("%1 ").arg(static_cast<quint8>(byte), 2, 16, QLatin1Char('0')).toUpper());
@@ -18,7 +19,7 @@ QString formatQByte(QByteArray &array) {
     return data_with_crc_hex.trimmed();
 }
 
-QByteArray calculate_modbus_crc(const QByteArray &data) {
+QByteArray utils::calculate_modbus_crc(const QByteArray &data) {
     uint16_t crc = 0xFFFF;
     for (char byte : data) {
         crc ^= static_cast<uint8_t>(byte);
@@ -39,18 +40,18 @@ QByteArray calculate_modbus_crc(const QByteArray &data) {
 }
 
 QByteArray _encode(QByteArray data) {
-    static QString key = "1234567890abcdef";
-//    QByteArray data = QByteArray::fromHex("3005000B63A721FF20010001000118");
-    qDebug() << "Ori:" << formatQByte(data);
-    QByteArray crcData = calculate_modbus_crc(data);
 
-    qDebug() << "crc:" << formatQByte(crcData);
+    //    QByteArray data = QByteArray::fromHex("3005000B63A721FF20010001000118");
+    qDebug() << "Ori:" << utils::formatQByte(data);
+    QByteArray crcData = utils::calculate_modbus_crc(data);
+
+    qDebug() << "crc:" << utils::formatQByte(crcData);
 
     // Encrypt data using AES in ECB mode
     QAESEncryption encryption(QAESEncryption::AES_128, QAESEncryption::ECB, QAESEncryption::PKCS7);
 
-    QByteArray encryptedData = encryption.encode(crcData, key.toUtf8());
-    qDebug()<<"aes: " << formatQByte(encryptedData);
+    QByteArray encryptedData = encryption.encode(crcData, globalReadOnlyKey->toUtf8());
+    qDebug()<<"aes: " << utils::formatQByte(encryptedData);
 
     // Encode the encrypted data using base64 encoding
     QByteArray base64Data = encryptedData.toBase64();
@@ -64,7 +65,7 @@ QByteArray _encode(QByteArray data) {
 }
 
 
-QByteArray convertQStringToByteArray(const QString &input) {
+QByteArray utils::convertQStringToByteArray(const QString &input) {
     QByteArray result;
     const int length = input.length();
 
@@ -84,7 +85,7 @@ QByteArray convertQStringToByteArray(const QString &input) {
     return result;
 }
 
-QString get_time() {
+QString utils::get_time() {
     QDateTime currentDateTime = QDateTime::currentDateTime();
     uint32_t time = static_cast<uint32_t>(currentDateTime.toMSecsSinceEpoch() / 1000);
 
@@ -96,7 +97,6 @@ QString get_time() {
 QByteArray utils::encode(QString addr, QString code, QString data, bool circle) {
     auto time = get_time();
     uint32_t len = (data.length() + time.length()) / 2;
-
 
     QString s_data;
 

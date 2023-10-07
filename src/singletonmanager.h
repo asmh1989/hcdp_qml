@@ -6,6 +6,7 @@
 #include <QtSerialPort/QSerialPort>
 #include <QtSerialPort/QSerialPortInfo>
 #include <QStringList>
+#include <QThreadPool>
 
 
 class SingletonManager : public QObject
@@ -19,13 +20,15 @@ public:
 
     // 接口函数
     Q_INVOKABLE void doSomething();
-    Q_INVOKABLE void showToast(QString msg);
-
+    Q_INVOKABLE void showGlobalToast(QString msg);
 
     Q_INVOKABLE QStringList  getSerialPortList();
 
     Q_INVOKABLE QString  openSerialPort(int port, int rate);
     Q_INVOKABLE void  closeSerialPort();
+    Q_INVOKABLE void  clearCache();
+
+    Q_INVOKABLE QString  sendData(QString addr, QString code, QString data, bool circle = false);
 
 
     int constantValue() const;
@@ -41,7 +44,8 @@ public slots:
 signals:
     // 信号用于触发回调
     void callbackSignal(const QString& message);
-    void onShowToast(QString msg);
+    void showToast(const QString& msg);
+    void serialData(const QString& msg);
 
 private:
     explicit SingletonManager();
@@ -50,7 +54,10 @@ private:
     int m_constantValue = 42;
     QSerialPort serial;                            // 定义全局串口对象
     CallbackFunction m_callback;
+    QByteArray buffer;
     QList<QSerialPortInfo> serialPortList;
+    QThreadPool customThreadPool;
+
 };
 
 

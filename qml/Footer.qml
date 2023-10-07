@@ -10,7 +10,6 @@ Rectangle{
     border.color: '#50A0FF'
     border.width: 1
     radius: 4
-    width: parent.width
 
     Item {
         anchors.leftMargin: 16
@@ -45,13 +44,14 @@ Rectangle{
                 ScrollView {
                     anchors.fill: parent
                     anchors.margins: 2
+                    ScrollBar.vertical.policy: ScrollBar.AlwaysOn
 
                     TextArea {
-
+                        id: area
                         wrapMode: Text.Wrap
                         font.pointSize: 10
+                        font.family: "Consolas"
                         selectByMouse: true
-
                     }
                 }
 
@@ -59,4 +59,20 @@ Rectangle{
             }
         }
     }
+
+    Connections {
+        target: sm
+
+        function onSerialData(msg) {
+
+            if (msg.length === 0) {  // clear
+                area.text = ""
+            } else {
+                area.text += msg
+                area.text += "...................................................................\n"
+            }
+
+        }
+    }
+
 }

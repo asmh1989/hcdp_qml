@@ -6,7 +6,6 @@ Rectangle{
     border.color: '#50A0FF'
     border.width: 1
     radius: 4
-    width: parent.width
 
     property bool isOpen: false
 
@@ -70,8 +69,7 @@ Rectangle{
                                    isOpen = true;
                                    btn.text = "CloseSerial"
                                } else {
-//                                   console.log("err : "+ res);
-                                   sm.showToast(res);
+                                   sm.showGlobalToast(res);
                                }
                            } else {
                                sm.closeSerialPort();
@@ -87,6 +85,7 @@ Rectangle{
             width: 80
             anchors.verticalCenter: parent.verticalCenter
             text:qsTr("ClearCache")
+            onClicked: sm.clearCache()
         }
 
         ComboBox {
@@ -103,11 +102,6 @@ Rectangle{
             text: qsTr("CircleSend")
         }
     }
-
-//    Component.onCompleted: {
-//        sm.onShowToast.connect(showToast2);
-//    }
-
 
     Connections {
         target: sm
