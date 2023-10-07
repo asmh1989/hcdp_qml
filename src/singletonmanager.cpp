@@ -275,14 +275,14 @@ void SingletonManager::init(){
         m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
     }
 
-//    loadJsonFile(m_saveSerialDataList, "data/save.json");
+    loadJsonFile(m_saveSerialDataList, "data/save.json");
 
-//    if(m_saveSerialDataList.isEmpty()) {
-//        QJsonObject jsonObj;
-//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-//    }
+    if(m_saveSerialDataList.isEmpty()) {
+        QJsonObject jsonObj;
+        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+    }
 
 }
 
@@ -299,4 +299,15 @@ void SingletonManager::setSerialDataList(const QList<QJsonObject> &dataList) {
     }
 }
 
+
+QList<QJsonObject> SingletonManager::saveSerialDataList() const {
+    return m_saveSerialDataList;
+}
+
+void SingletonManager::setSaveSerialDataList(const QList<QJsonObject> &dataList) {
+    if (m_saveSerialDataList != dataList) {
+        m_saveSerialDataList = dataList;
+        emit saveSerialDataListChanged();
+    }
+}
 

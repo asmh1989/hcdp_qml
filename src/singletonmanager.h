@@ -7,6 +7,7 @@
 #include <QtSerialPort/QSerialPortInfo>
 #include <QStringList>
 #include <QThreadPool>
+#include <QJsonObject>
 
 class SingletonManager : public QObject
 {
@@ -17,6 +18,7 @@ public:
     // 常量参数
     Q_PROPERTY(int constantValue READ constantValue CONSTANT)
     Q_PROPERTY(QList<QJsonObject> serialDataList READ serialDataList WRITE setSerialDataList NOTIFY serialDataListChanged)
+    Q_PROPERTY(QList<QJsonObject> saveSerialDataList READ saveSerialDataList WRITE setSaveSerialDataList NOTIFY saveSerialDataListChanged)
 
     // 接口函数
     Q_INVOKABLE void showGlobalToast(QString msg);
@@ -35,6 +37,9 @@ public:
     QList<QJsonObject> serialDataList() const;
     void setSerialDataList(const QList<QJsonObject> &dataList);
 
+    QList<QJsonObject> saveSerialDataList() const;
+    void setSaveSerialDataList(const QList<QJsonObject> &dataList);
+
 public slots:
     void receive();
 
@@ -44,6 +49,7 @@ signals:
     void showToast(const QString& msg);
     void serialData(const QString& msg);
     void serialDataListChanged();
+    void saveSerialDataListChanged();
 
 private:
     explicit SingletonManager();
@@ -57,10 +63,7 @@ private:
     QThreadPool customThreadPool;
 
     QList<QJsonObject> m_serialDataList;
-
-//    QList<QJsonObject> m_saveSerialDataList;
-
-
+    QList<QJsonObject> m_saveSerialDataList;
 
 };
 

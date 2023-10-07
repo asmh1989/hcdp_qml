@@ -31,23 +31,104 @@ Rectangle{
                 anchors.left: parent.left
                 width: parent.width* 0.45
 
-//                ListView {
 
-//                    id: listView
-//                    width: parent.width - 4
-//                    height: root.height - header.height
-//                    boundsBehavior: Flickable.StopAtBounds
-//                    boundsMovement: Flickable.StopAtBounds
-//                    clip: true
-//                    ScrollBar.vertical: ScrollBar {
-//                        active: true
-//                    }
-//                    model: sm.saveSerialDataList
-//                    delegate:Text {
-//                        id: text
-//                        text: modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
-//                    }
-//                }
+                ListView {
+                    id: listView
+                    anchors.fill: parent
+                    anchors.margins: 1
+                    boundsBehavior: Flickable.StopAtBounds
+                    boundsMovement: Flickable.StopAtBounds
+                    clip: true
+                    ScrollBar.vertical: ScrollBar {
+                        active: true
+                    }
+                    header: Text {
+                        text: " 先选中, 在右键进行操作"
+                        wrapMode: Text.Wrap
+                        font.pointSize: 10
+                        font.family: "Consolas"
+                    }
+
+                    model: sm.saveSerialDataList
+                    //modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
+                    delegate:
+                        Item {
+                        width: parent.width
+                        height: 20
+
+
+                        Rectangle {
+                            id:rectangle
+                            width: parent.width
+                            height: parent.height
+                            // 根据选中状态设置背景颜色
+                            color: listView.currentIndex === index ? "lightblue" : "white"
+
+                            Text {
+                                text: modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
+
+
+                            }
+
+                            MouseArea {
+                                id: mouseArea
+                                anchors.fill: parent
+                                acceptedButtons: Qt.LeftButton | Qt.RightButton
+
+                                onClicked: (mouse) => {
+                                    if (mouse.button === Qt.LeftButton) {
+                                        listView.currentIndex = index;
+                                    } else if (mouse.button === Qt.RightButton && listView.currentIndex == index ) {
+                                        // 计算鼠标点击的位置，并将位置信息传递给Menu
+                                        contextMenu.x = mouseArea.mouseX;
+                                        contextMenu.y = mouseArea.mouseY;
+                                        contextMenu.open();                                    }
+
+                                }
+
+                            }
+
+                            Menu {
+                                id: contextMenu
+                                MenuItem {
+                                    text: "Action 1"
+                                    onTriggered: {
+                                        console.log("Action 1 triggered for item:", model.name);
+                                    }
+                                }
+                                MenuItem {
+                                    text: "Action 2"
+                                    onTriggered: {
+                                        console.log("Action 2 triggered for item:", model.name);
+                                    }
+                                }
+
+//                                function open(x, y) {
+//                                    contextMenu.x = x;
+//                                    contextMenu.y = y;
+//                                    contextMenu.open();
+//                                }
+                            }
+                        }
+
+                        states: [
+                            State {
+                                name: "selected"
+                                when: listView.currentIndex === index
+                                PropertyChanges { target: rectangle; color: "lightblue" }
+                            }
+                        ]
+
+                        transitions: Transition {
+                            from: "*"
+                            to: "selected"
+                            reversible: true
+                            ColorAnimation { properties: "color"; duration: 200 }
+                        }
+                    }
+
+
+                }
             }
 
 
