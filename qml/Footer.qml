@@ -30,7 +30,26 @@ Rectangle{
                 height: parent.height
                 anchors.left: parent.left
                 width: parent.width* 0.45
+
+//                ListView {
+
+//                    id: listView
+//                    width: parent.width - 4
+//                    height: root.height - header.height
+//                    boundsBehavior: Flickable.StopAtBounds
+//                    boundsMovement: Flickable.StopAtBounds
+//                    clip: true
+//                    ScrollBar.vertical: ScrollBar {
+//                        active: true
+//                    }
+//                    model: sm.saveSerialDataList
+//                    delegate:Text {
+//                        id: text
+//                        text: modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
+//                    }
+//                }
             }
+
 
             Rectangle{
                 border.color: '#50A0FF'
@@ -70,6 +89,7 @@ Rectangle{
             } else {
                 area.text += msg
                 area.text += "...................................................................\n"
+                area.cursorPosition = area.length-1
             }
 
         }

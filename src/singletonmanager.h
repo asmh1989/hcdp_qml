@@ -8,7 +8,6 @@
 #include <QStringList>
 #include <QThreadPool>
 
-
 class SingletonManager : public QObject
 {
     Q_OBJECT
@@ -17,9 +16,9 @@ public:
 
     // 常量参数
     Q_PROPERTY(int constantValue READ constantValue CONSTANT)
+    Q_PROPERTY(QList<QJsonObject> serialDataList READ serialDataList WRITE setSerialDataList NOTIFY serialDataListChanged)
 
     // 接口函数
-    Q_INVOKABLE void doSomething();
     Q_INVOKABLE void showGlobalToast(QString msg);
 
     Q_INVOKABLE QStringList  getSerialPortList();
@@ -33,11 +32,9 @@ public:
 
     int constantValue() const;
 
-    // 回调函数类型
-    using CallbackFunction = std::function<void(const QString& message)>;
+    QList<QJsonObject> serialDataList() const;
+    void setSerialDataList(const QList<QJsonObject> &dataList);
 
-    // 设置回调函数
-    void setCallback(const CallbackFunction& callback);
 public slots:
     void receive();
 
@@ -46,17 +43,24 @@ signals:
     void callbackSignal(const QString& message);
     void showToast(const QString& msg);
     void serialData(const QString& msg);
+    void serialDataListChanged();
 
 private:
     explicit SingletonManager();
     ~SingletonManager();
+    void init();
     static SingletonManager* m_instance;
     int m_constantValue = 42;
     QSerialPort serial;                            // 定义全局串口对象
-    CallbackFunction m_callback;
     QByteArray buffer;
     QList<QSerialPortInfo> serialPortList;
     QThreadPool customThreadPool;
+
+    QList<QJsonObject> m_serialDataList;
+
+//    QList<QJsonObject> m_saveSerialDataList;
+
+
 
 };
 

@@ -55,6 +55,7 @@ target_link_libraries(apphcdp
 
 #target_link_libraries(apphcdp QtAES)
 
+configure_file(${CMAKE_SOURCE_DIR}/data/data.json ${CMAKE_BINARY_DIR}/data/data.json COPYONLY)
 
 
 include_directories(Qt-AES)

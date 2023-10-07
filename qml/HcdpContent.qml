@@ -94,38 +94,7 @@ Rectangle{
                 ScrollBar.vertical: ScrollBar {
                     active: true
                 }
-                model: ListModel {
-                    ListElement {
-                        address: "30"
-                        code: "05"
-                        sdata: "20010001 0001 12"
-                        circleSend: false
-                        name: "【获取电源数据】"
-                    }
-                    ListElement {
-                        address: "30"
-                        code: "06"
-                        sdata: "20030010 0000"
-                        circleSend: false
-                        name: "【获取电源数据】"
-                    }
-
-                    ListElement {
-                        address: "30"
-                        code: "06"
-                        sdata: "20030010 0000"
-                        circleSend: false
-                        name: "【获取电源数据】"
-                    }
-
-                    ListElement {
-                        address: "30"
-                        code: "06"
-                        sdata: "20030010 0000"
-                        circleSend: false
-                        name: "【获取电源数据】"
-                    }
-                }
+                model: sm.serialDataList
                 delegate:Column {
                     height: header.height+6
                     Row {
@@ -136,17 +105,17 @@ Rectangle{
                         HcdpInput {
                             id: s_addr
                             width: h_addr.width
-                            myInput: address
+                            myInput: modelData.addr
                         }
                         HcdpInput {
                             id: s_code
                             width: h_code.width
-                            myInput: code
+                            myInput: modelData.code
                         }
                         HcdpInput {
                             id: s_data
                             width: h_data.width
-                            myInput: sdata
+                            myInput: modelData.data
                         }
 
                         Item {
@@ -155,13 +124,13 @@ Rectangle{
                             CheckBox {
                                 id: checked
                                 anchors.centerIn: parent
-                                checked: circleSend
+                                checked: modelData.circle
                             }
                         }
 
                         HcdpInput {
                             width: h_name.width
-                            myInput: name
+                            myInput: modelData.name
                         }
 
                         Button {
@@ -169,10 +138,6 @@ Rectangle{
                             width: h_save.width
                             text: qsTr("Save")
                             onClicked: ()=> {
-//                                           console.log("h_addr.height: "+ h_addr.height
-//                                                       +" header.height =" + header.height
-//                                                       +" listView.height = "+ listView.height
-//                                                       +" root.height = "+ root.height)
                                        }
                         }
 
@@ -191,6 +156,17 @@ Rectangle{
                 }
             }
         }
+    }
+
+    Component.onCompleted: {
+        // 将 QVariant 转换为 JSON 字符串
+//        var jsonStr = JSON.stringify(sm.serialDataList);
+
+//        // 将 JSON 字符串解析为 JavaScript 对象
+//        var jsonObject = JSON.parse(jsonStr);
+
+        // 打印 JSON 对象
+//        console.log("JSON Object:", jsonStr, "  ");
     }
 
     Connections {

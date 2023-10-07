@@ -2,6 +2,9 @@
 #include "singletonmanager.h"
 #include <QDebug>
 #include <QDateTime>
+#include <QJsonDocument>
+#include <QJsonArray>
+#include <QFile>
 
 #include "utils.h"
 #include "qaesencryption.h"
@@ -11,12 +14,12 @@
 SingletonManager* SingletonManager::m_instance = nullptr;
 
 SingletonManager::SingletonManager() {
-    //    utils::encode("30", "05", "20010001000118");
-
     customThreadPool.setMaxThreadCount(2); // 设置最大线程数
 
     // 连接readyRead()信号，当串口有可用数据时触发
     QObject::connect(&serial, &QSerialPort::readyRead, this, &SingletonManager::receive);
+
+    init();
 }
 
 SingletonManager::~SingletonManager(){
@@ -85,7 +88,7 @@ void SingletonManager::receive()
                 QByteArray crcData2 = decryption.decode(encode, globalReadOnlyKey->toUtf8());
                 QByteArray crcData = QAESEncryption::RemovePadding(crcData2, QAESEncryption::PKCS7);
                 log.append("Receive: Hex:       "+utils::formatQByte(crcData)+"\n");
-//                qDebug()<<log.toUtf8().constData();
+                //                qDebug()<<log.toUtf8().constData();
 
                 auto s = parseCrc(crcData);
                 if(s.circle) {
@@ -235,20 +238,65 @@ QString SingletonManager::sendData(QString addr, QString code, QString data, boo
 
 }
 
-void SingletonManager::doSomething()
-{
-    // 执行一些操作
-    if (m_callback) {
-        m_callback("Operation completed.");
-    }
-}
-
-void SingletonManager::setCallback(const CallbackFunction& callback)
-{
-    m_callback = callback;
-}
-
 void  SingletonManager::clearCache() {
     emit serialData("");
 }
+
+void loadJsonFile(QList<QJsonObject> & list, const QString& path) {
+    QFile file(path);
+    if (file.open(QIODevice::ReadOnly)) {
+        QByteArray jsonData = file.readAll();
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
+        QJsonArray jsonArray = jsonDoc.array();
+
+        for (const auto &jsonValue : jsonArray) {
+            QJsonObject jsonObj = jsonValue.toObject();
+            SerialData data = SerialData::fromJson(jsonObj);
+            list.append(data.toJson());
+        }
+
+        file.close();
+    }
+}
+
+void SingletonManager::init(){
+    qDebug() <<  "SingletonManager::init ... ";
+
+    loadJsonFile(m_serialDataList, "data/cache.json");
+
+    if(m_serialDataList.isEmpty()) {
+        loadJsonFile(m_serialDataList, "data/data.json");
+    }
+
+    if(m_serialDataList.isEmpty()) {
+        QJsonObject jsonObj;
+        m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
+        m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
+        m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
+    }
+
+//    loadJsonFile(m_saveSerialDataList, "data/save.json");
+
+//    if(m_saveSerialDataList.isEmpty()) {
+//        QJsonObject jsonObj;
+//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+//        m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
+//    }
+
+}
+
+
+
+QList<QJsonObject> SingletonManager::serialDataList() const {
+    return m_serialDataList;
+}
+
+void SingletonManager::setSerialDataList(const QList<QJsonObject> &dataList) {
+    if (m_serialDataList != dataList) {
+        m_serialDataList = dataList;
+        emit serialDataListChanged();
+    }
+}
+
 
