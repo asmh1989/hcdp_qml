@@ -65,6 +65,11 @@ Rectangle{
             anchors.verticalCenter: parent.verticalCenter
             text:qsTr("OpenSerial")
             onClicked: ()=> {
+                           if(port.model.length === 0){
+                               sm.showGlobalToast("no serial port found!!");
+                               return;
+                           }
+
                            if(!isOpen){
                                var res = sm.openSerialPort(port.currentIndex, rate.currentValue);
                                if (res.length === 0) {
