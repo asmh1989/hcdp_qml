@@ -368,3 +368,14 @@ QString SingletonManager::selectFile(const QUrl &url) {
     }
     return res;
 }
+
+
+QString SingletonManager::getScaleCache() {
+    QSettings settings("MyCompany", "MyApp");
+    return settings.value("QT_SCALE_FACTOR", "1.2").toString();
+}
+
+void SingletonManager::setScaleCache(const QString &value) {
+    QSettings settings("MyCompany", "MyApp");
+    settings.setValue("QT_SCALE_FACTOR", value);
+}

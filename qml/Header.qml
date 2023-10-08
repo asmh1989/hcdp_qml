@@ -46,12 +46,12 @@ Rectangle{
 
         GrayLabel {
             text: qsTr("Rate")
-            width: 60
+            width: 40
         }
 
         ComboBox {
             id: rate
-            width: 80
+            width: 60
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 3
@@ -104,7 +104,7 @@ Rectangle{
 
         Button {
             height: parent.height
-            width: 80
+            width: 70
             enabled: !timer.running
             anchors.verticalCenter: parent.verticalCenter
             text:qsTr("AutoRun")
@@ -170,13 +170,34 @@ Rectangle{
             }
         }
 
-        //        ComboBox {
-        //            width: 60
-        //            height: parent.height
-        //            anchors.verticalCenter: parent.verticalCenter
-        //            currentIndex: 1
-        //            model:[150, 200, 250, 300,400]
-        //        }
+        GrayLabel {
+            text: qsTr("Scale:")
+            width: 40
+        }
+
+        ComboBox {
+            id: scale
+            width: 40
+            height: parent.height
+            anchors.verticalCenter: parent.verticalCenter
+            currentIndex: 0
+            model:["1.0", "1.2", "1.5", "2.0"]
+
+            onCurrentIndexChanged: {
+                // 当用户改变了ComboBox的选择时，更新someValue的值
+                var now = scale.model[currentIndex]
+                if(now !== sm.getScaleCache()){
+                    sm.setScaleCache(now+"")
+                    sm.showGlobalToast("scale = "+now + " 重启生效!")
+                }
+            }
+
+            Component.onCompleted: ()=> {
+                                       var now = sm.getScaleCache();
+                                       console.log(" now = "+ now);
+                                       scale.currentIndex = scale.model.indexOf(now)
+                                   }
+        }
 
         //        CheckBox {
         //            height: parent.height

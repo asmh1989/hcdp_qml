@@ -3,11 +3,11 @@ import QtQuick.Window
 import QtQuick.Controls
 
 Window {
-    width: 1000
-    height: 800
+    width: 960
+    height: 640
     visible: true
     title: qsTr("hcdp客户端")
-
+    x: 0
 
     readonly property int margin: 10
 
