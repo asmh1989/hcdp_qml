@@ -5,6 +5,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <QFile>
+#include <QDir>
 
 #include "utils.h"
 #include "qaesencryption.h"
@@ -60,7 +61,6 @@ SerialData parseCrc(const QByteArray& inputByteArray) {
 void SingletonManager::receive()
 {
     QByteArray receivedData = serial.readAll();
-    //    qDebug() << "Received data: " << receivedData;
     buffer.append(receivedData);
 
     // 寻找帧头'$'
@@ -242,22 +242,43 @@ void  SingletonManager::clearCache() {
     emit serialData("");
 }
 
-void loadJsonFile(QList<QJsonObject> & list, const QString& path) {
+QString loadJsonFile(QList<QJsonObject> &list, const QString &path) {
     QFile file(path);
-    if (file.open(QIODevice::ReadOnly)) {
-        QByteArray jsonData = file.readAll();
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData);
-        QJsonArray jsonArray = jsonDoc.array();
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+        return QString("%1 cannot open").arg(path);
+    }
 
-        for (const auto &jsonValue : jsonArray) {
-            QJsonObject jsonObj = jsonValue.toObject();
-            SerialData data = SerialData::fromJson(jsonObj);
-            list.append(data.toJson());
+    QByteArray jsonData = file.readAll();
+    file.close();
+
+    QJsonParseError parseError;
+    QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
+    if (jsonDoc.isNull()) {
+        qDebug() << "Failed to parse JSON: " << parseError.errorString() << " path = "<< path;
+        return QString("Failed to parse JSON: %1").arg(parseError.errorString());
+    }
+
+    if (!jsonDoc.isArray()) {
+        qDebug() << "Invalid JSON format: not an array";
+        return "Invalid JSON format: not an array";
+    }
+
+    QJsonArray jsonArray = jsonDoc.array();
+    for (const auto &jsonValue : jsonArray) {
+        if (!jsonValue.isObject()) {
+            qDebug() << "Invalid JSON format: array contains non-object elements";
+            continue;
         }
 
-        file.close();
+        QJsonObject jsonObj = jsonValue.toObject();
+        SerialData data = SerialData::fromJson(jsonObj);
+
+        list.append(data.toJson());
+
     }
+    return "";
 }
+
 
 void SingletonManager::init(){
     qDebug() <<  "SingletonManager::init ... ";
@@ -286,7 +307,32 @@ void SingletonManager::init(){
 
 }
 
+void saveJsonFile(const QList<QJsonObject> &list, const QString &path) {
+    // 获取文件目录
+    QDir dir(QFileInfo(path).path());
 
+    // 如果目录不存在，创建目录
+    if (!dir.exists()) {
+        dir.mkpath(".");
+    }
+
+    QFile file(path);
+    if (file.open(QIODevice::WriteOnly)) {
+        QJsonArray jsonArray;
+
+        // 将QList<QJsonObject>转换为QJsonArray
+        for (const auto &jsonObj : list) {
+            jsonArray.append(jsonObj);
+        }
+
+        QJsonDocument jsonDoc(jsonArray);
+        file.write(jsonDoc.toJson());
+        file.close();
+        qDebug() << "JSON data saved to: " << path;
+    } else {
+        qDebug() << "Failed to save JSON data to: " << path << file.errorString();
+    }
+}
 
 QList<QJsonObject> SingletonManager::serialDataList() const {
     return m_serialDataList;
@@ -296,6 +342,7 @@ void SingletonManager::setSerialDataList(const QList<QJsonObject> &dataList) {
     if (m_serialDataList != dataList) {
         m_serialDataList = dataList;
         emit serialDataListChanged();
+        saveJsonFile(dataList, "data/cache.json");
     }
 }
 
@@ -308,6 +355,16 @@ void SingletonManager::setSaveSerialDataList(const QList<QJsonObject> &dataList)
     if (m_saveSerialDataList != dataList) {
         m_saveSerialDataList = dataList;
         emit saveSerialDataListChanged();
+        saveJsonFile(dataList, "data/save.json");
     }
 }
 
+
+QString SingletonManager::selectFile(const QUrl &url) {
+    QList<QJsonObject> list;
+    QString res = loadJsonFile(list, url.toLocalFile());
+    if(res.isEmpty()) {
+        setSerialDataList(list);
+    }
+    return res;
+}

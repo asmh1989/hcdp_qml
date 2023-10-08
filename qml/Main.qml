@@ -4,7 +4,7 @@ import QtQuick.Controls
 
 Window {
     width: 1000
-    height: 640
+    height: 800
     visible: true
     title: qsTr("hcdp客户端")
 
@@ -55,7 +55,7 @@ Window {
 
         function onShowToast(msg) {
             console.log("showToast msg = "+ msg);
-            toast.show(msg, 1500);
+            toast.show(msg, 3000);
         }
     }
 }

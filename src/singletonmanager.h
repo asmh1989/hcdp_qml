@@ -29,6 +29,9 @@ public:
     Q_INVOKABLE void  closeSerialPort();
     Q_INVOKABLE void  clearCache();
 
+    Q_INVOKABLE QString  selectFile(const QUrl &url);
+
+
     Q_INVOKABLE QString  sendData(QString addr, QString code, QString data, bool circle = false);
 
 

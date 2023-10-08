@@ -35,8 +35,8 @@ Rectangle{
                     id: listView
                     anchors.fill: parent
                     anchors.margins: 1
-//                    boundsBehavior: Flickable.StopAtBounds
-//                    boundsMovement: Flickable.StopAtBounds
+                    //                    boundsBehavior: Flickable.StopAtBounds
+                    //                    boundsMovement: Flickable.StopAtBounds
                     clip: true
                     snapMode: ListView.SnapToItem
                     ScrollBar.vertical: ScrollBar {
@@ -100,7 +100,8 @@ Rectangle{
                                                    // 计算鼠标点击的位置，并将位置信息传递给Menu
                                                    contextMenu.x = mouseArea.mouseX;
                                                    contextMenu.y = mouseArea.mouseY;
-                                                   contextMenu.open();                                    }
+                                                   contextMenu.open();
+                                               }
 
                                            }
 
@@ -111,6 +112,9 @@ Rectangle{
                                 MenuItem {
                                     text: "插入到发送列表"
                                     onTriggered: {
+                                        var d = sm.serialDataList
+                                        d = [modelData, ...d]
+                                        sm.serialDataList =  d
                                     }
                                 }
                                 MenuItem {

@@ -52,8 +52,8 @@ struct SerialData {
         obj["code"] = code;
         obj["data"] = data;
         obj["name"] = name;
-//        obj["quantity"] = quantity;
-//        obj["time"] = time;
+        //        obj["quantity"] = quantity;
+        //        obj["time"] = time;
         obj["circle"] = circle;
         return obj;
     }
@@ -83,9 +83,9 @@ struct SerialData {
         } else {
             data.name = "【获取电源数据】";
         }
-//        data.quantity = obj["quantity"].toString();
-//        data.time = obj["time"].toString();
-//        data.circle = obj["circle"].toBool();
+        //        data.quantity = obj["quantity"].toString();
+        //        data.time = obj["time"].toString();
+        //        data.circle = obj["circle"].toBool();
         return data;
     }
 };

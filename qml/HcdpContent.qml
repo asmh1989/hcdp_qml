@@ -149,9 +149,20 @@ Rectangle{
                             width: h_click.width
                             text: qsTr("ClickSend")
                             onClicked: ()=> {
+
+
                                            var res = sm.sendData(s_addr.myInput, s_code.myInput, s_data.myInput, checked.checked);
                                            if (res.length !== 0) {
                                                sm.showGlobalToast(res);
+                                           } else {
+                                               if(s_addr.myInput !== modelData.addr || s_code.myInput !== modelData.code || s_data.myInput !== modelData.data) {
+                                                   var d = sm.serialDataList;
+                                                   var d2 = d[index];
+                                                   d2.addr = s_addr.myInput;
+                                                   d2.code = s_code.myInput;
+                                                   d2.data = s_data.myInput;
+                                                   sm.serialDataList =  d;
+                                               }
                                            }
                                        }
                         }
