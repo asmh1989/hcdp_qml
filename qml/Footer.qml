@@ -7,6 +7,9 @@ import QtQuick.Layouts
 
 Rectangle{
     color: 'transparent'
+    border.color: '#50A0FF'
+    border.width: 1
+    radius: 4
 
     Item {
         anchors.leftMargin: 16

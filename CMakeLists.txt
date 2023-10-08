@@ -14,8 +14,11 @@ find_package(Qt6 6.2 REQUIRED COMPONENTS Quick Core Qml SerialPort)
 
 add_subdirectory(Qt-AES)
 
+set(app_icon_resource_windows "${CMAKE_CURRENT_SOURCE_DIR}/icon.rc")
+
 qt_add_executable(apphcdp
     src/main.cpp
+    ${app_icon_resource_windows}
 )
 
 qt_add_qml_module(apphcdp
