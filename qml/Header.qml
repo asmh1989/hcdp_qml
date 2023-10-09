@@ -26,6 +26,7 @@ Rectangle{
             id: port
             width: 200
             editable: true
+            enabled: !isOpen
             selectTextByMouse: true
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
@@ -51,7 +52,7 @@ Rectangle{
 
         ComboBox {
             id: rate
-            width: 60
+            width: 80
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 3
@@ -182,7 +183,7 @@ Rectangle{
 
         ComboBox {
             id: scale
-            width: 40
+            width: 48
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 0
