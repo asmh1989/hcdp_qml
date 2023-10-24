@@ -372,7 +372,11 @@ QString SingletonManager::selectFile(const QUrl &url) {
 
 QString SingletonManager::getScaleCache() {
     QSettings settings("MyCompany", "MyApp");
-    return settings.value("QT_SCALE_FACTOR", "1.2").toString();
+    QString scale = settings.value("QT_SCALE_FACTOR", "1.25").toString();
+    if(scale == "1.2"){
+        scale = "1.25";
+    }
+    return scale;
 }
 
 void SingletonManager::setScaleCache(const QString &value) {

@@ -177,11 +177,11 @@ Rectangle{
 
         ComboBox {
             id: scale
-            width: 40
+            width: 42
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 0
-            model:["1.0", "1.2", "1.5", "2.0"]
+            model:["1.0", "1.25", "1.5", "2.0"]
 
             onCurrentIndexChanged: {
                 // 当用户改变了ComboBox的选择时，更新someValue的值
