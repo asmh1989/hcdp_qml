@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Dialogs
 
-Rectangle{
+Rectangle {
     color: 'transparent'
     border.color: '#50A0FF'
     border.width: 1
@@ -26,22 +26,23 @@ Rectangle{
             id: port
             width: 200
             editable: true
+            enabled: !isOpen
             selectTextByMouse: true
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
-            model:sm.getSerialPortList()
+            model: sm.getSerialPortList()
         }
 
         Button {
             height: parent.height
             width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("Refresh")
+            text: qsTr("Refresh")
 
-            onClicked: ()=> {
-                           //                           console.log("refresh ...")
-                           port.model = sm.getSerialPortList();
-                       }
+            onClicked: () => {
+                //                           console.log("refresh ...")
+                port.model = sm.getSerialPortList();
+            }
         }
 
         GrayLabel {
@@ -51,11 +52,11 @@ Rectangle{
 
         ComboBox {
             id: rate
-            width: 60
+            width: 80
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 3
-            model:[9600, 19200, 38400, 115200]
+            model: [9600, 19200, 38400, 115200]
         }
 
         Button {
@@ -63,43 +64,45 @@ Rectangle{
             height: parent.height
             width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("OpenSerial")
-            onClicked: ()=> {
-                           if(!isOpen){
-                               var res = sm.openSerialPort(port.currentIndex, rate.currentValue);
-                               if (res.length === 0) {
-                                   isOpen = true;
-                                   btn.text = "CloseSerial"
-                               } else {
-                                   sm.showGlobalToast(res);
-                               }
-                           } else {
-                               sm.closeSerialPort();
-                               isOpen = false;
-                               btn.text = "OpenSerial"
-                           }
-
-                       }
+            text: qsTr("OpenSerial")
+            onClicked: () => {
+                if (port.model.length === 0) {
+                    sm.showGlobalToast("no serial port found!!");
+                    return;
+                }
+                if (!isOpen) {
+                    var res = sm.openSerialPort(port.currentIndex, rate.currentValue);
+                    if (res.length === 0) {
+                        isOpen = true;
+                        btn.text = "CloseSerial";
+                    } else {
+                        sm.showGlobalToast(res);
+                    }
+                } else {
+                    sm.closeSerialPort();
+                    isOpen = false;
+                    btn.text = "OpenSerial";
+                }
+            }
         }
 
         Button {
             height: parent.height
             width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("ClearCache")
+            text: qsTr("ClearCache")
             onClicked: sm.clearCache()
         }
 
-
         Button {
             height: parent.height
             width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("SelectFile")
-            onClicked: ()=>{
-                           // 打开文件选择对话框
-                           fileDialog.open();
-                       }
+            text: qsTr("SelectFile")
+            onClicked: () => {
+                // 打开文件选择对话框
+                fileDialog.open();
+            }
         }
 
         Button {
@@ -107,13 +110,13 @@ Rectangle{
             width: 70
             enabled: !timer.running
             anchors.verticalCenter: parent.verticalCenter
-            text:qsTr("AutoRun")
-            onClicked: ()=>{
-                           if(!timer.running){
-                               times = 0
-                               timer.start()
-                           }
-                       }
+            text: qsTr("AutoRun")
+            onClicked: () => {
+                if (!timer.running) {
+                    times = 0;
+                    timer.start();
+                }
+            }
         }
 
         Timer {
@@ -121,24 +124,23 @@ Rectangle{
             triggeredOnStart: true
             repeat: true
             interval: 1500
-            onTriggered: ()=>{
-                             var d = sm.serialDataList;
-                             if (times < d.length){
-                                 var c = d[times]
-                                 var res = sm.sendData(c.addr, c.code, c.data, false);
-                                 if (res.length !== 0) {
-                                     sm.showGlobalToast(res);
-                                     timer.stop()
-                                     return;
-                                 } else {
-                                     times +=1
-                                 }
-                             } else  if(times === d.length){
-                                 sm.showGlobalToast("auto send "+ d.length+" sussess!!")
-                                 timer.stop();
-                             }
-
-                         }
+            onTriggered: () => {
+                var d = sm.serialDataList;
+                if (times < d.length) {
+                    var c = d[times];
+                    var res = sm.sendData(c.addr, c.code, c.data, false);
+                    if (res.length !== 0) {
+                        sm.showGlobalToast(res);
+                        timer.stop();
+                        return;
+                    } else {
+                        times += 1;
+                    }
+                } else if (times === d.length) {
+                    sm.showGlobalToast("auto send " + d.length + " sussess!!");
+                    timer.stop();
+                }
+            }
         }
 
         function delay(delayTime, cb) {
@@ -151,13 +153,13 @@ Rectangle{
         FileDialog {
             id: fileDialog
             title: "Select a File"
-            nameFilters:["Json files (*.json)"]
+            nameFilters: ["Json files (*.json)"]
             //            folder: shortcuts.home // 设置默认文件夹
             onAccepted: {
                 // 用户选择了文件
                 console.log("Selected file:", fileDialog.selectedFile);
                 var res = sm.selectFile(fileDialog.selectedFile);
-                if(res.length !== 0) {
+                if (res.length !== 0) {
                     sm.showToast(res);
                 } else {
                     sm.showToast("load success!");
@@ -177,26 +179,26 @@ Rectangle{
 
         ComboBox {
             id: scale
-            width: 42
+            width: 48
             height: parent.height
             anchors.verticalCenter: parent.verticalCenter
             currentIndex: 0
-            model:["1.0", "1.25", "1.5", "2.0"]
+            model: ["1.0", "1.25", "1.5", "2.0"]
 
             onCurrentIndexChanged: {
                 // 当用户改变了ComboBox的选择时，更新someValue的值
-                var now = scale.model[currentIndex]
-                if(now !== sm.getScaleCache()){
-                    sm.setScaleCache(now+"")
-                    sm.showGlobalToast("scale = "+now + " 重启生效!")
+                var now = scale.model[currentIndex];
+                if (now !== sm.getScaleCache()) {
+                    sm.setScaleCache(now + "");
+                    sm.showGlobalToast("scale = " + now + " 重启生效!");
                 }
             }
 
-            Component.onCompleted: ()=> {
-                                       var now = sm.getScaleCache();
-                                       console.log(" now = "+ now);
-                                       scale.currentIndex = scale.model.indexOf(now)
-                                   }
+            Component.onCompleted: () => {
+                var now = sm.getScaleCache();
+                console.log(" now = " + now);
+                scale.currentIndex = scale.model.indexOf(now);
+            }
         }
 
         //        CheckBox {
@@ -209,5 +211,4 @@ Rectangle{
     Connections {
         target: sm
     }
-
 }

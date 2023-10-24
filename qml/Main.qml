@@ -3,7 +3,7 @@ import QtQuick.Window
 import QtQuick.Controls
 
 Window {
-    width: 960
+    width: 1000
     height: 640
     visible: true
     title: qsTr("hcdp客户端")
