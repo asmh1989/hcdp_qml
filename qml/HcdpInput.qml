@@ -9,12 +9,14 @@ Rectangle {
     radius: 4
 
     TextInput {
+        anchors.margins: 4
         id: inputField
         anchors.fill: parent
-//        anchors.margins: 2
+        //        anchors.margins: 2
         font.pointSize: 10
         horizontalAlignment: Qt.AlignHCenter
         verticalAlignment: Qt.AlignVCenter
         selectByMouse: true
+        clip: true
     }
 }
