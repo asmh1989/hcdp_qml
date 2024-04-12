@@ -2,169 +2,180 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-
-
-Rectangle{
-    color: 'transparent'
-    border.color: '#50A0FF'
-    border.width: 1
-    radius: 4
+Rectangle {
 
     Item {
-        anchors.leftMargin: 16
-        anchors.topMargin: 16
-        anchors.bottomMargin: 16
-
         anchors.fill: parent
 
         Column {
             anchors.fill: parent
-            spacing: 6
             clip: true
             id: root
 
             RowLayout {
                 id: header
-                width: parent.width - 20
-                spacing: 6
+                width: parent.width
+                height: 20
+                spacing: 0
 
                 GrayLabel {
-                    id: h_addr
-                    text: qsTr("Address")
-                    padding: 6
-                    Layout.minimumWidth: 60
+                    id: h_1
+                    text: qsTr("No.")
+                    Layout.minimumWidth: cellWidth
+                    Layout.fillHeight: true
                 }
                 GrayLabel {
-                    id: h_code
-                    Layout.minimumWidth: 60
-                    text: qsTr("Code")
-                    padding: 6
+                    id: h_2
+                    Layout.minimumWidth: cellWidth * 2
+                    Layout.fillHeight: true
+                    text: qsTr("Time")
                 }
 
                 GrayLabel {
-                    id:h_data
+                    id: h_3
+                    Layout.minimumWidth: cellWidth
+                    Layout.fillHeight: true
+                    text: qsTr("FmCls")
+                }
+
+                GrayLabel {
+                    id: h_4
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("DstAddr")
+                }
+
+                GrayLabel {
+                    id: h_5
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("SrcAddr")
+                }
+                GrayLabel {
+                    id: h_6
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("FmLen")
+                }
+                GrayLabel {
+                    id: h_7
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("DgTag")
+                }
+                GrayLabel {
+                    id: h_8
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("DstPt")
+                }
+                GrayLabel {
+                    id: h_9
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("SrcPt")
+                }
+                GrayLabel {
+                    id: h_10
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth
+                    text: qsTr("DgLen")
+                }
+                GrayLabel {
+                    id: h_11
+                    Layout.fillHeight: true
                     Layout.fillWidth: true
-                    Layout.minimumWidth: 300
-                    Layout.preferredWidth: 400
-                    Layout.maximumWidth: 2000
                     text: qsTr("Data")
-                    padding: 6
                 }
 
                 GrayLabel {
-                    id: h_circle
-                    Layout.minimumWidth: 60
-                    text: qsTr("CircleSend")
-                    padding: 6
-                }
-
-                GrayLabel {
-                    id: h_name
-                    Layout.fillWidth: true
-                    Layout.minimumWidth: 150
-                    Layout.preferredWidth: 200
-                    Layout.maximumWidth: 1000
-                    text: qsTr("Names")
-                    padding: 6
-                }
-
-                GrayLabel {
-                    id: h_save
-                    Layout.minimumWidth: 60
-                    text: qsTr("Save")
-                    padding: 6
-                }
-
-                GrayLabel {
-                    id: h_click
-                    Layout.minimumWidth: 60
-                    text: qsTr("ClickSend")
-                    padding: 6
+                    id: h_12
+                    Layout.fillHeight: true
+                    Layout.minimumWidth: cellWidth * 2
+                    padding: 4
+                    text: qsTr("Info")
                 }
             }
 
             ListView {
-
                 id: listView
-                width: parent.width - 4
+                width: parent.width
                 height: root.height - header.height
                 boundsBehavior: Flickable.StopAtBounds
                 boundsMovement: Flickable.StopAtBounds
                 clip: true
                 ScrollBar.vertical: ScrollBar {
                     active: true
+                    policy: ScrollBar.AlwaysOn
                 }
                 model: sm.serialDataList
-                delegate:Column {
-                    height: header.height+6
+                delegate: Rectangle {
+                    height: 20
+                    width: parent.width
+                    color: index % 2 === 0 ? 'white' : '#9beec7'
+
                     Row {
-                        width: listView.width
-                        spacing: 6
-                        height: header.height
-
-                        HcdpInput {
-                            id: s_addr
-                            width: h_addr.width
-                            myInput: modelData.addr
-                        }
-                        HcdpInput {
-                            id: s_code
-                            width: h_code.width
-                            myInput: modelData.code
-                        }
-                        HcdpInput {
-                            id: s_data
-                            width: h_data.width
-                            myInput: modelData.data
-                        }
-
-                        Item {
+                        anchors.fill: parent
+                        CenterText {
+                            width: h_1.width
                             height: parent.height
-                            width: h_circle.width
-                            CheckBox {
-                                id: checked
-                                anchors.centerIn: parent
-                                checked: modelData.circle
-                            }
+                            text: (index + 1) + ""
                         }
-
-                        HcdpInput {
-                            width: h_name.width
-                            myInput: modelData.name
-                        }
-
-                        Button {
+                        CenterText {
+                            width: h_2.width
                             height: parent.height
-                            width: h_save.width
-                            text: qsTr("Save")
-                            onClicked: ()=> {
-                                           var d = sm.saveSerialDataList;
-                                           d.push(modelData)
-                                           sm.saveSerialDataList = d
-                                       }
+                            text: modelData.time
+                        }
+                        CenterText {
+                            width: h_3.width
+                            height: parent.height
+                            text: modelData.fmCls
+                        }
+                        CenterText {
+                            width: h_4.width
+                            height: parent.height
+                            text: modelData.dstAddr
+                        }
+                        CenterText {
+                            width: h_5.width
+                            height: parent.height
+                            text: modelData.srcAddr
+                        }
+                        CenterText {
+                            width: h_6.width
+                            height: parent.height
+                            text: modelData.fmLen
+                        }
+                        CenterText {
+                            width: h_7.width
+                            height: parent.height
+                            text: modelData.dgTag
+                        }
+                        CenterText {
+                            width: h_8.width
+                            height: parent.height
+                            text: modelData.dstPt
+                        }
+                        CenterText {
+                            width: h_9.width
+                            height: parent.height
+                            text: modelData.srcPt
+                        }
+                        CenterText {
+                            width: h_10.width
+                            height: parent.height
+                            text: modelData.dgLen
+                        }
+                        CenterText {
+                            width: h_11.width
+                            height: parent.height
+                            text: modelData.Data
                         }
 
-                        Button {
+                        CenterText {
+                            width: h_12.width
                             height: parent.height
-                            width: h_click.width
-                            text: qsTr("ClickSend")
-                            onClicked: ()=> {
-
-
-                                           var res = sm.sendData(s_addr.myInput, s_code.myInput, s_data.myInput, checked.checked);
-                                           if (res.length !== 0) {
-                                               sm.showGlobalToast(res);
-                                           } else {
-                                               if(s_addr.myInput !== modelData.addr || s_code.myInput !== modelData.code || s_data.myInput !== modelData.data) {
-                                                   var d = sm.serialDataList;
-                                                   var d2 = d[index];
-                                                   d2.addr = s_addr.myInput;
-                                                   d2.code = s_code.myInput;
-                                                   d2.data = s_data.myInput;
-                                                   sm.serialDataList =  d;
-                                               }
-                                           }
-                                       }
+                            text: modelData.crc
                         }
                     }
                 }
@@ -173,18 +184,12 @@ Rectangle{
     }
 
     Component.onCompleted: {
-        // 将 QVariant 转换为 JSON 字符串
-        //        var jsonStr = JSON.stringify(sm.serialDataList);
 
-        //        // 将 JSON 字符串解析为 JavaScript 对象
-        //        var jsonObject = JSON.parse(jsonStr);
-
-        // 打印 JSON 对象
-        //        console.log("JSON Object:", jsonStr, "  ");
+        // console.log("json = "+ JSON.stringify(sm.serialDataList))
+        // listView.model = sm.serialDataList;
     }
 
     Connections {
         target: sm
     }
-
 }

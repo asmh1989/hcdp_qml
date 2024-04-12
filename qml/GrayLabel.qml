@@ -5,6 +5,7 @@ Label {
 //    property string title: ""
 
     height: parent.height
+    font.pointSize: 8
 //    padding: 8
 
     background: Rectangle {

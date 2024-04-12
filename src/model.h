@@ -1,92 +1,96 @@
 #ifndef MODEL_H
 #define MODEL_H
 
-#include <QObject>
-#include <QString>
+#include <QDateTime>
 #include <QGlobalStatic>
 #include <QJsonObject>
+#include <QObject>
+#include <QString>
 
 Q_GLOBAL_STATIC(const QString, globalReadOnlyKey, "1234567890abcdef");
 
 struct SerialData {
-    QString addr;
-    QString code;
-    QString data;
-    QString name;
-    QString quantity="";
-    QString time="";
-    bool circle = false;
+  QString fmCls;
+  QString dstAddr;
+  QString srcAddr;
+  QString fmLen;
+  QString dgTag;
+  QString dstPt;
+  QString srcPt;
+  QString dgLen;
+  QString Data;
+  QString time;
+  QString crc;
+  QString error;
 
-    // 赋值操作符重载函数，实现深度拷贝
-    SerialData& operator=(const SerialData& other) {
-        if (this != &other) { // 避免自赋值
-            addr = other.addr;
-            code = other.code;
-            data = other.data;
-            name = other.name;
-            quantity = other.quantity;
-            time = other.time;
-            circle = other.circle;
-        }
-        return *this;
+  // 构造函数，设置 time 为当前时间的格式化字符串
+  SerialData() {
+    time = QDateTime::currentDateTime().time().toString("hh:mm:ss.zzz");
+  }
+
+  // 赋值操作符重载函数，实现深度拷贝
+  SerialData &operator=(const SerialData &other) {
+    if (this != &other) {  // 避免自赋值
+      fmCls = other.fmCls;
+      dstAddr = other.dstAddr;
+      srcAddr = other.srcAddr;
+      fmLen = other.fmLen;
+      dgTag = other.dgTag;
+      dstPt = other.dstPt;
+      srcPt = other.srcPt;
+      dgLen = other.dgLen;
+      Data = other.Data;
+      time = other.time;
+      error = other.error;
+      crc = other.crc;
     }
+    return *this;
+  }
 
-    // 定义比较操作符
-    bool operator==(const SerialData& other) const {
-        return addr == other.addr &&
-               code == other.code &&
-               data == other.data &&
-               name == other.name &&
-               quantity == other.quantity &&
-               time == other.time &&
-               circle == other.circle;
-    }
+  // 定义比较操作符
+  bool operator==(const SerialData &other) const {
+    return fmCls == other.fmCls && dstAddr == other.dstAddr &&
+           srcAddr == other.srcAddr && fmLen == other.fmLen &&
+           dgTag == other.dgTag && dstPt == other.dstPt &&
+           srcPt == other.srcPt && dgLen == other.dgLen && Data == other.Data &&
+           time == other.time;
+  }
 
-    bool operator!=(const SerialData& other) const {
-        return !(*this == other);
-    }
+  bool operator!=(const SerialData &other) const { return !(*this == other); }
 
-    QJsonObject toJson() const {
-        QJsonObject obj;
-        obj["addr"] = addr;
-        obj["code"] = code;
-        obj["data"] = data;
-        obj["name"] = name;
-        //        obj["quantity"] = quantity;
-        //        obj["time"] = time;
-        obj["circle"] = circle;
-        return obj;
-    }
+  QJsonObject toJson() const {
+    QJsonObject obj;
+    obj["fmCls"] = fmCls;
+    obj["dstAddr"] = dstAddr;
+    obj["srcAddr"] = srcAddr;
+    obj["fmLen"] = fmLen;
+    obj["dgTag"] = dgTag;
+    obj["dstPt"] = dstPt;
+    obj["srcPt"] = srcPt;
+    obj["dgLen"] = dgLen;
+    obj["Data"] = Data;
+    obj["time"] = time;
+    obj["error"] = error;
+    obj["crc"] = crc;
+    return obj;
+  }
 
-    static SerialData fromJson(const QJsonObject &obj) {
-        SerialData data;
-        if (obj.contains("addr") && obj["addr"].isString()) {
-            data.addr = obj["addr"].toString();
-        } else {
-            data.addr ="30";
-        }
+  static SerialData fromJson(const QJsonObject &obj) {
+    SerialData data;
+    data.fmCls = obj["fmCls"].toString();
+    data.dstAddr = obj["dstAddr"].toString();
+    data.srcAddr = obj["srcAddr"].toString();
+    data.fmLen = obj["fmLen"].toString();
+    data.dgTag = obj["dgTag"].toString();
+    data.dstPt = obj["dstPt"].toString();
+    data.srcPt = obj["srcPt"].toString();
+    data.dgLen = obj["dgLen"].toString();
+    data.Data = obj["Data"].toString();
+    data.time = obj["time"].toString();
+    data.error = obj["error"].toString();
+    data.crc = obj["crc"].toString();
 
-        if (obj.contains("code") && obj["code"].isString()) {
-            data.code = obj["code"].toString();
-        } else {
-            data.code = "05";
-        }
-
-        if (obj.contains("data") && obj["data"].isString()) {
-            data.data = obj["data"].toString();
-        } else {
-            data.data = "20010001 0001 12";
-        }
-
-        if (obj.contains("name") && obj["name"].isString()) {
-            data.name = obj["name"].toString();
-        } else {
-            data.name = "【获取电源数据】";
-        }
-        //        data.quantity = obj["quantity"].toString();
-        //        data.time = obj["time"].toString();
-        //        data.circle = obj["circle"].toBool();
-        return data;
-    }
+    return data;
+  }
 };
-#endif // MODEL_H
+#endif  // MODEL_H
