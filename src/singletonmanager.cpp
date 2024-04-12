@@ -14,8 +14,9 @@
 
 SingletonManager *SingletonManager::m_instance = nullptr;
 
-SingletonManager::SingletonManager() {
-  customThreadPool.setMaxThreadCount(2);  // 设置最大线程数
+SingletonManager::SingletonManager()
+{
+  customThreadPool.setMaxThreadCount(2); // 设置最大线程数
 
   // 连接readyRead()信号，当串口有可用数据时触发
   QObject::connect(&serial, &QSerialPort::readyRead, this,
@@ -26,7 +27,8 @@ SingletonManager::SingletonManager() {
 
 SingletonManager::~SingletonManager() {}
 
-SerialData parseCrc(const QByteArray &inputByteArray) {
+SerialData parseCrc(const QByteArray &inputByteArray)
+{
   SerialData parsedData;
 
   auto size = inputByteArray.size();
@@ -67,22 +69,26 @@ SerialData parseCrc(const QByteArray &inputByteArray) {
   return parsedData;
 }
 
-void SingletonManager::receive() {
+void SingletonManager::receive()
+{
   QByteArray receivedData = serial.readAll();
   buffer.append(receivedData);
 
   // 寻找帧头'$'
   int startIndex = buffer.indexOf('$');
-  while (startIndex != -1) {
+  while (startIndex != -1)
+  {
     // 寻找帧尾'\r'
     int endIndex = buffer.indexOf('\r', startIndex);
-    if (endIndex != -1) {
+    if (endIndex != -1)
+    {
       // 提取一帧内容
       QByteArray frameData =
           buffer.mid(startIndex + 1, endIndex - startIndex - 1);
 
       // 使用Lambda函数在线程池中处理数据
-      auto processor = [frameData, this]() {
+      auto processor = [frameData, this]()
+      {
         // 在这里进行数据处理逻辑
         qDebug() << "Processing data: " << frameData;
         QDateTime currentDateTime = QDateTime::currentDateTime();
@@ -104,11 +110,14 @@ void SingletonManager::receive() {
         //                qDebug()<<log.toUtf8().constData();
 
         auto s = parseCrc(crcData);
-        if (s.circle) {
+        if (s.circle)
+        {
           log.append(QString("Receive: Data:      Address:%1   Code:%2   "
                              "Quantity:%3   TimeStamp:%4   Data:%5\n")
                          .arg(s.addr, s.code, s.quantity, s.time, s.data));
-        } else {
+        }
+        else
+        {
           log.append("Receive: Data:      ERROR!!\n");
         }
 
@@ -119,7 +128,9 @@ void SingletonManager::receive() {
 
       // 从缓存中移除已处理的数据
       buffer.remove(0, endIndex + 1);
-    } else {
+    }
+    else
+    {
       // 如果没有找到帧尾，保留剩余数据到缓存中
       buffer = buffer.mid(startIndex);
       break;
@@ -130,11 +141,13 @@ void SingletonManager::receive() {
   }
 }
 
-QStringList SingletonManager::getSerialPortList() {
+QStringList SingletonManager::getSerialPortList()
+{
   QStringList availablePorts;
   serialPortList = QSerialPortInfo::availablePorts();
   // 将串口信息添加到字符串列表
-  foreach (const QSerialPortInfo &serialPortInfo, serialPortList) {
+  foreach (const QSerialPortInfo &serialPortInfo, serialPortList)
+  {
     availablePorts.append(serialPortInfo.description() + " (" +
                           serialPortInfo.portName() + ")");
   }
@@ -144,7 +157,8 @@ QStringList SingletonManager::getSerialPortList() {
   return availablePorts;
 }
 
-QString SingletonManager::openSerialPort(int port, int rate) {
+QString SingletonManager::openSerialPort(int port, int rate)
+{
   auto p = serialPortList.at(port);
   qDebug() << "openSerialPort port = " << p.portName() << " rate = " << rate;
   serial.setPortName(p.portName());
@@ -153,14 +167,18 @@ QString SingletonManager::openSerialPort(int port, int rate) {
   serial.setFlowControl(QSerialPort::NoFlowControl);
   serial.setParity(QSerialPort::NoParity);
   serial.setStopBits(QSerialPort::OneStop);
-  if (serial.isOpen()) {
+  if (serial.isOpen())
+  {
     return tr("Can't open %1").arg(p.portName());
   }
-  if (!serial.open(QIODevice::ReadWrite)) {
+  if (!serial.open(QIODevice::ReadWrite))
+  {
     return tr("Can't open %1, error code %2")
         .arg(p.portName())
         .arg(serial.error());
-  } else {
+  }
+  else
+  {
     qDebug() << "openSerial success!";
   }
 
@@ -169,8 +187,10 @@ QString SingletonManager::openSerialPort(int port, int rate) {
 
 void SingletonManager::closeSerialPort() { serial.close(); }
 
-SingletonManager *SingletonManager::instance() {
-  if (!m_instance) {
+SingletonManager *SingletonManager::instance()
+{
+  if (!m_instance)
+  {
     m_instance = new SingletonManager();
   }
   return m_instance;
@@ -181,12 +201,14 @@ int SingletonManager::constantValue() const { return m_constantValue; }
 void SingletonManager::showGlobalToast(QString msg) { emit showToast(msg); }
 
 QString SingletonManager::sendData(QString addr, QString code, QString data2,
-                                   bool circle) {
+                                   bool circle)
+{
   addr.replace(" ", "");
   code.replace(" ", "");
   data2.replace(" ", "");
   QString data = data2;
-  if (data2.contains('"')) {
+  if (data2.contains('"'))
+  {
     data = data2.toUtf8().toHex();
   }
 
@@ -244,19 +266,24 @@ QString SingletonManager::sendData(QString addr, QString code, QString data2,
 
   emit serialData(log);
 
-  if (serial.isOpen()) {
+  if (serial.isOpen())
+  {
     serial.write(finalData);
     return "";
-  } else {
+  }
+  else
+  {
     return "please open serial FIRST!!";
   }
 }
 
 void SingletonManager::clearCache() { emit serialData(""); }
 
-QString loadJsonFile(QList<QJsonObject> &list, const QString &path) {
+QString loadJsonFile(QList<QJsonObject> &list, const QString &path)
+{
   QFile file(path);
-  if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+  if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+  {
     return QString("%1 cannot open").arg(path);
   }
 
@@ -265,20 +292,24 @@ QString loadJsonFile(QList<QJsonObject> &list, const QString &path) {
 
   QJsonParseError parseError;
   QJsonDocument jsonDoc = QJsonDocument::fromJson(jsonData, &parseError);
-  if (jsonDoc.isNull()) {
+  if (jsonDoc.isNull())
+  {
     qDebug() << "Failed to parse JSON: " << parseError.errorString()
              << " path = " << path;
     return QString("Failed to parse JSON: %1").arg(parseError.errorString());
   }
 
-  if (!jsonDoc.isArray()) {
+  if (!jsonDoc.isArray())
+  {
     qDebug() << "Invalid JSON format: not an array";
     return "Invalid JSON format: not an array";
   }
 
   QJsonArray jsonArray = jsonDoc.array();
-  for (const auto &jsonValue : jsonArray) {
-    if (!jsonValue.isObject()) {
+  for (const auto &jsonValue : jsonArray)
+  {
+    if (!jsonValue.isObject())
+    {
       qDebug() << "Invalid JSON format: array contains non-object elements";
       continue;
     }
@@ -291,16 +322,19 @@ QString loadJsonFile(QList<QJsonObject> &list, const QString &path) {
   return "";
 }
 
-void SingletonManager::init() {
+void SingletonManager::init()
+{
   qDebug() << "SingletonManager::init ... ";
 
   loadJsonFile(m_serialDataList, "data/cache.json");
 
-  if (m_serialDataList.isEmpty()) {
+  if (m_serialDataList.isEmpty())
+  {
     loadJsonFile(m_serialDataList, "data/data.json");
   }
 
-  if (m_serialDataList.isEmpty()) {
+  if (m_serialDataList.isEmpty())
+  {
     QJsonObject jsonObj;
     m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
     m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
@@ -309,7 +343,8 @@ void SingletonManager::init() {
 
   loadJsonFile(m_saveSerialDataList, "data/save.json");
 
-  if (m_saveSerialDataList.isEmpty()) {
+  if (m_saveSerialDataList.isEmpty())
+  {
     QJsonObject jsonObj;
     m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
     m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
@@ -317,21 +352,25 @@ void SingletonManager::init() {
   }
 }
 
-void saveJsonFile(const QList<QJsonObject> &list, const QString &path) {
+void saveJsonFile(const QList<QJsonObject> &list, const QString &path)
+{
   // 获取文件目录
   QDir dir(QFileInfo(path).path());
 
   // 如果目录不存在，创建目录
-  if (!dir.exists()) {
+  if (!dir.exists())
+  {
     dir.mkpath(".");
   }
 
   QFile file(path);
-  if (file.open(QIODevice::WriteOnly)) {
+  if (file.open(QIODevice::WriteOnly))
+  {
     QJsonArray jsonArray;
 
     // 将QList<QJsonObject>转换为QJsonArray
-    for (const auto &jsonObj : list) {
+    for (const auto &jsonObj : list)
+    {
       jsonArray.append(jsonObj);
     }
 
@@ -339,55 +378,68 @@ void saveJsonFile(const QList<QJsonObject> &list, const QString &path) {
     file.write(jsonDoc.toJson());
     file.close();
     qDebug() << "JSON data saved to: " << path;
-  } else {
+  }
+  else
+  {
     qDebug() << "Failed to save JSON data to: " << path << file.errorString();
   }
 }
 
-QList<QJsonObject> SingletonManager::serialDataList() const {
+QList<QJsonObject> SingletonManager::serialDataList() const
+{
   return m_serialDataList;
 }
 
-void SingletonManager::setSerialDataList(const QList<QJsonObject> &dataList) {
-  if (m_serialDataList != dataList) {
+void SingletonManager::setSerialDataList(const QList<QJsonObject> &dataList)
+{
+  if (m_serialDataList != dataList)
+  {
     m_serialDataList = dataList;
     emit serialDataListChanged();
     saveJsonFile(dataList, "data/cache.json");
   }
 }
 
-QList<QJsonObject> SingletonManager::saveSerialDataList() const {
+QList<QJsonObject> SingletonManager::saveSerialDataList() const
+{
   return m_saveSerialDataList;
 }
 
 void SingletonManager::setSaveSerialDataList(
-    const QList<QJsonObject> &dataList) {
-  if (m_saveSerialDataList != dataList) {
+    const QList<QJsonObject> &dataList)
+{
+  if (m_saveSerialDataList != dataList)
+  {
     m_saveSerialDataList = dataList;
     emit saveSerialDataListChanged();
     saveJsonFile(dataList, "data/save.json");
   }
 }
 
-QString SingletonManager::selectFile(const QUrl &url) {
+QString SingletonManager::selectFile(const QUrl &url)
+{
   QList<QJsonObject> list;
   QString res = loadJsonFile(list, url.toLocalFile());
-  if (res.isEmpty()) {
+  if (res.isEmpty())
+  {
     setSerialDataList(list);
   }
   return res;
 }
 
-QString SingletonManager::getScaleCache() {
+QString SingletonManager::getScaleCache()
+{
   QSettings settings("MyCompany", "MyApp");
   QString scale = settings.value("QT_SCALE_FACTOR", "1.25").toString();
-  if (scale == "1.2") {
+  if (scale == "1.2")
+  {
     scale = "1.25";
   }
   return scale;
 }
 
-void SingletonManager::setScaleCache(const QString &value) {
+void SingletonManager::setScaleCache(const QString &value)
+{
   QSettings settings("MyCompany", "MyApp");
   settings.setValue("QT_SCALE_FACTOR", value);
 }
