@@ -2,17 +2,57 @@
 
 #include <QDateTime>
 #include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QMutex>
 
 #include "model.h"
 #include "qaesencryption.h"
+#include "singletonmanager.h"
+const qint64 LOG_FILE_LIMIT = 3000000;
 
 utils::utils() {}
+
+QMutex mutex2;
+
+void utils::recordLog(QString &str) {
+  const QString LOG_PATH = SingletonManager::instance()->getLogPath();
+  QDir dir(LOG_PATH);
+  if (!dir.exists()) {
+    dir.mkpath(".");
+  }
+
+  // thread safety
+  mutex2.lock();
+
+  // prepend timestamp to every message
+  QString datetime2 = QDateTime::currentDateTime().toString("yyyy-MM-dd");
+  QString filePath = LOG_PATH + "/recv-" + datetime2 + ".log";
+  QFile outFile(filePath);
+
+  // if file reached the limit, rotate to filename.1
+  if (outFile.size() > LOG_FILE_LIMIT) {
+    // roll the log file.
+    QFile::remove(filePath + ".1");
+    QFile::rename(filePath, filePath + ".1");
+    QFile::resize(filePath, 0);
+  }
+
+  // write message
+  outFile.open(QIODevice::WriteOnly | QIODevice::Append);
+  QTextStream ts(&outFile);
+  ts << str << Qt::endl;
+
+  // close fd
+  outFile.close();
+  mutex2.unlock();
+}
 
 QString utils::formatQByte(const QByteArray &array) {
   QString data_with_crc_hex;
   for (char byte : array) {
     data_with_crc_hex.append(
-        QString("%1 ")
+        QString("%1")
             .arg(static_cast<quint8>(byte), 2, 16, QLatin1Char('0'))
             .toUpper());
   }

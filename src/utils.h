@@ -14,6 +14,7 @@ class utils {
   static QByteArray calculate_modbus_crc(const QByteArray &data);
   static QByteArray convertQStringToByteArray(const QString &input);
   static QString get_time();
+  static void recordLog(QString &log);
 };
 
 #endif  // UTILS_H

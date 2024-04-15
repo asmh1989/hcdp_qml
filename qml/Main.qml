@@ -1,17 +1,24 @@
 import QtQuick
 import QtQuick.Window
 import QtQuick.Controls
-import Qt.labs.settings 1.0
+import QtCore
 
 Window {
     width: 1000
     height: 640
     visible: true
-    title: qsTr("hcdp客户端V0.1")
+    title: qsTr("Serial Frame Monitor  V 0.1.1")
     x: 0
 
     readonly property int margin: 10
     property int cellWidth: 50
+    property bool isOpen: false
+
+    property var encodeArr: ["base64", "ascii"]
+
+    property var stopArr: ["1", "1.5", "2"]
+
+    property var parityArr: ["No", "Even", "Odd", "Space", "Mark"]
 
     ToastManager {
         id: toast
@@ -41,6 +48,14 @@ Window {
                 anchors.top: content.bottom
                 anchors.topMargin: margin
                 anchors.bottom: parent.bottom
+                anchors.bottomMargin: ss.height + 10
+                width: parent.width
+            }
+
+            FooterStatus {
+                id: ss
+                height: 20
+                anchors.bottom: parent.bottom
                 width: parent.width
             }
         }
@@ -52,8 +67,43 @@ Window {
 
     Settings {
         id: appSettings
-        property string ssd: ""
-        property string esd: ""
+        property string ssd: "24"
+        property string esd: "0d"
+        property int encodeIndex: 0
+        property bool saveLog: true
+        property int stopIndex: 0
+        property int parityIndex: 0
+        Component.onCompleted: {
+            sm.frameStart = ssd
+            sm.frameEnd = esd
+            sm.encodeIndex = encodeIndex
+            sm.setStopBits(stopIndex)
+            sm.setParity(parityIndex)
+            sm.setAutoSaveLog(saveLog)
+        }
+
+        onEncodeIndexChanged: {
+            sm.encodeIndex = encodeIndex
+        }
+
+        onSsdChanged: {
+            sm.frameStart = ssd
+        }
+
+        onEsdChanged: {
+            sm.frameEnd = esd
+        }
+
+        onParityIndexChanged: {
+            sm.setParity(parityIndex)
+        }
+
+        onStopIndexChanged: {
+            sm.setStopBits(stopIndex)
+        }
+        onSaveLogChanged: {
+            sm.setAutoSaveLog(saveLog)
+        }
     }
 
     Connections {

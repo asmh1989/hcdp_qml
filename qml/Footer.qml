@@ -42,7 +42,6 @@ Rectangle {
                 area.text = ""
             } else {
                 area.text += msg
-                area.text += "...................................................................\n"
                 area.cursorPosition = area.length - 1
             }
         }

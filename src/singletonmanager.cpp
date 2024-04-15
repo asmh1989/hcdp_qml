@@ -1,6 +1,7 @@
 // SingletonManager.cpp
 #include "singletonmanager.h"
 
+#include <QCoreApplication>
 #include <QDateTime>
 #include <QDebug>
 #include <QDir>
@@ -14,6 +15,8 @@
 #include "utils.h"
 
 SingletonManager *SingletonManager::m_instance = nullptr;
+QSettings settings("MyCompany", "MyApp");
+const QString LOG_KEY = "__log_path_";
 
 QJsonObject newJson() {
   QString jsonString =
@@ -35,6 +38,12 @@ SerialData parseCrc(const QByteArray &inputByteArray) {
   auto size = inputByteArray.size();
   if (size < 13) {
     parsedData.error = "帧长度不到13";
+    return parsedData;
+  }
+
+  auto crc_c = inputByteArray.mid(0, size - 2);
+  if (inputByteArray != utils::calculate_modbus_crc(crc_c)) {
+    parsedData.error = "crc error";
     return parsedData;
   }
 
@@ -108,7 +117,17 @@ void SingletonManager::testParse(const QByteArray &test1, int encode) {
 }
 
 SingletonManager::SingletonManager()
-    : m_frameStart("24"), m_frameEnd("0d"), m_encodeIndex(0) {
+    : m_frameStart("24"),
+      m_frameEnd("0d"),
+      m_encodeIndex(0),
+      m_rxBytes(0),
+      m_rxFrames(0),
+      m_rxError(0),
+      m_logPath(""),
+      m_autoSaveLog(true),
+      m_stopBits(QSerialPort::OneStop),
+      m_Parity(QSerialPort::NoParity),
+      m_crcType(0) {
   customThreadPool.setMaxThreadCount(2);  // 设置最大线程数
 
   // 连接readyRead()信号，当串口有可用数据时触发
@@ -158,6 +177,8 @@ void SingletonManager::addDemo() {
 
 void SingletonManager::receive() {
   QByteArray receivedData = serial.readAll();
+  m_rxBytes += receivedData.length();
+  emit rxBytesChanged();
   buffer.append(receivedData);
   auto fs = toByteArray(m_frameStart);
   auto fe = toByteArray(m_frameEnd);
@@ -175,41 +196,35 @@ void SingletonManager::receive() {
       // 使用Lambda函数在线程池中处理数据
       auto processor = [frameData, this]() {
         // 在这里进行数据处理逻辑
-        qDebug() << "Processing data: " << frameData;
+        // qDebug() << "Processing data: " << frameData;
         QDateTime currentDateTime = QDateTime::currentDateTime();
         QString formattedTime = currentDateTime.toString("hh:mm:ss.zzz");
         QString log;
 
         log.append("Receive: Time: " + formattedTime + " ");
-        log.append("encode: " + frameData + " ");
-        // QByteArray encode = QByteArray::fromBase64(frameData);
-        // log.append("Receive: decodeHex:       " + utils::formatQByte(encode)
-        // +
-        //            " 解密前\n");
-        // QAESEncryption decryption(QAESEncryption::AES_128,
-        // QAESEncryption::ECB,
-        //                           QAESEncryption::PKCS7);
-        // QByteArray crcData2 =
-        //     decryption.decode(encode, globalReadOnlyKey->toUtf8());
-        // QByteArray crcData =
-        //     QAESEncryption::RemovePadding(crcData2, QAESEncryption::PKCS7);
-
-        // log.append("Receive: Hex:       " + utils::formatQByte(crcData) +
-        // "\n");
+        log.append("encode: " + utils::formatQByte(frameData) + " ");
 
         QByteArray encode = decodeData(frameData);
 
         auto s = parseCrc(encode);
+        m_rxFrames += 1;
 
         if (s.error.isEmpty()) {
           m_serialDataList.append(s.toJson());
           log.append(" <font color=\"green\">parse success</font>");
         } else {
-          log.append(" <font color=\"green\">parse Error:" + s.error +
-                     "</font>");
+          m_rxError += 1;
+          log.append(" <font color=\"red\">parse Error:" + s.error + "</font>");
         }
-        emit serialDataListChanged();
-        emit serialData(log);
+        refreshEmit(log);
+        if (m_autoSaveLog) {
+          if (s.error.isEmpty()) {
+            log.append(" JSON: ");
+            log.append(
+                QJsonDocument(s.toJson()).toJson(QJsonDocument::Compact));
+          }
+          utils::recordLog(log);
+        }
       };
 
       QThreadPool::globalInstance()->start(std::bind(processor));
@@ -236,20 +251,20 @@ QStringList SingletonManager::getSerialPortList() {
                           serialPortInfo.portName() + ")");
   }
 
-  qDebug() << "Available Serial Ports:" << availablePorts;
+  // qDebug() << "Available Serial Ports:" << availablePorts;
 
   return availablePorts;
 }
 
 QString SingletonManager::openSerialPort(int port, int rate) {
   auto p = serialPortList.at(port);
-  qDebug() << "openSerialPort port = " << p.portName() << " rate = " << rate;
+  // qDebug() << "openSerialPort port = " << p.portName() << " rate = " << rate;
   serial.setPortName(p.portName());
   serial.setBaudRate(QSerialPort::Baud115200);
   serial.setDataBits(QSerialPort::Data8);
   serial.setFlowControl(QSerialPort::NoFlowControl);
-  serial.setParity(QSerialPort::NoParity);
-  serial.setStopBits(QSerialPort::OneStop);
+  serial.setParity(m_Parity);
+  serial.setStopBits(m_stopBits);
   if (serial.isOpen()) {
     return tr("Can't open %1").arg(p.portName());
   }
@@ -261,10 +276,18 @@ QString SingletonManager::openSerialPort(int port, int rate) {
     qDebug() << "openSerial success!";
   }
 
+  m_rxBytes = 0;
+  m_rxFrames = 0;
+  m_rxError = 0;
+  refreshEmit("serial open! " + p.portName());
+
   return "";
 }
 
-void SingletonManager::closeSerialPort() { serial.close(); }
+void SingletonManager::closeSerialPort() {
+  refreshEmit("serial close!");
+  serial.close();
+}
 
 SingletonManager *SingletonManager::instance() {
   if (!m_instance) {
@@ -386,31 +409,7 @@ QString loadJsonFile(QList<QJsonObject> &list, const QString &path) {
   return "";
 }
 
-void SingletonManager::init() {
-  qDebug() << "SingletonManager::init ... ";
-
-  // loadJsonFile(m_serialDataList, "data/cache.json");
-
-  // if (m_serialDataList.isEmpty()) {
-  //   loadJsonFile(m_serialDataList, "data/data.json");
-  // }
-
-  // if (m_serialDataList.isEmpty()) {
-  //   QJsonObject jsonObj;
-  //   m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  //   m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  //   m_serialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  // }
-
-  // loadJsonFile(m_saveSerialDataList, "data/save.json");
-
-  // if (m_saveSerialDataList.isEmpty()) {
-  //   QJsonObject jsonObj;
-  //   m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  //   m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  //   m_saveSerialDataList.append(SerialData::fromJson(jsonObj).toJson());
-  // }
-}
+void SingletonManager::init() {}
 
 void saveJsonFile(const QList<QJsonObject> &list, const QString &path) {
   // 获取文件目录
@@ -474,7 +473,6 @@ QString SingletonManager::selectFile(const QUrl &url) {
 }
 
 QString SingletonManager::getScaleCache() {
-  QSettings settings("MyCompany", "MyApp");
   QString scale = settings.value("QT_SCALE_FACTOR", "1.25").toString();
   if (scale == "1.2") {
     scale = "1.25";
@@ -483,6 +481,55 @@ QString SingletonManager::getScaleCache() {
 }
 
 void SingletonManager::setScaleCache(const QString &value) {
-  QSettings settings("MyCompany", "MyApp");
   settings.setValue("QT_SCALE_FACTOR", value);
+}
+
+QString SingletonManager::getLogPath() {
+  if (m_logPath.isEmpty()) {
+    if (settings.contains(LOG_KEY)) {
+      m_logPath = settings.value(LOG_KEY).toString();
+    } else {
+      m_logPath = QCoreApplication::applicationDirPath() + "/log";
+      setLogPath(m_logPath);
+    }
+  }
+  return m_logPath;
+}
+
+void SingletonManager::setLogPath(const QString &p) {
+  m_logPath = p;
+  settings.setValue(LOG_KEY, p);
+  emit logPathChanged();
+}
+
+void SingletonManager::setStopBits(int b) {
+  switch (b) {
+    case 1:
+      m_stopBits = QSerialPort::OneAndHalfStop;
+      break;
+    case 2:
+      m_stopBits = QSerialPort::TwoStop;
+      break;
+    default:
+      m_stopBits = QSerialPort::OneStop;
+  }
+}
+
+void SingletonManager::setParity(int b) {
+  switch (b) {
+    case 2:
+      m_Parity = QSerialPort::EvenParity;
+      break;
+    case 3:
+      m_Parity = QSerialPort::OddParity;
+      break;
+    case 4:
+      m_Parity = QSerialPort::SpaceParity;
+      break;
+    case 5:
+      m_Parity = QSerialPort::MarkParity;
+      break;
+    default:
+      m_Parity = QSerialPort::NoParity;
+  }
 }

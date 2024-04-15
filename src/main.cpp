@@ -8,10 +8,9 @@
 
 #include "singletonmanager.h"
 
-const qint64 LOG_FILE_LIMIT = 300000;
-const QString LOG_PATH = "log/";
+const qint64 LOG_FILE_LIMIT = 3000000;
 const QString VERSION = "0.1.0";
-
+const QString LOG_PATH = "log";
 // thread safety
 QMutex mutex;
 
@@ -38,6 +37,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext &context,
       txt = QString("[Fatal] ");
   }
 
+  // const QString LOG_PATH = SingletonManager::instance()->getLogPath();
   QDir dir(LOG_PATH);
   if (!dir.exists()) {
     dir.mkpath(".");
@@ -48,7 +48,7 @@ void redirectDebugMessages(QtMsgType type, const QMessageLogContext &context,
 
   // prepend timestamp to every message
   QString datetime2 = QDateTime::currentDateTime().toString("yyyy-MM-dd");
-  QString filePath = LOG_PATH + "log-" + datetime2 + ".log";
+  QString filePath = LOG_PATH + "/log-" + datetime2 + ".log";
   QFile outFile(filePath);
 
   // if file reached the limit, rotate to filename.1
@@ -73,10 +73,6 @@ int main(int argc, char *argv[]) {
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::PassThrough);
 
-#ifndef QT_DEBUG
-  qInstallMessageHandler(redirectDebugMessages);
-#endif
-
   auto sm = SingletonManager::instance();
 
   const QByteArray scale = sm->getScaleCache().toUtf8();
@@ -89,6 +85,11 @@ int main(int argc, char *argv[]) {
   app.setOrganizationDomain("em.com");
   app.setApplicationName("EMHcdp");
   app.setApplicationVersion("1.0");
+
+#ifndef QT_DEBUG
+  qInstallMessageHandler(redirectDebugMessages);
+#endif
+
   QQmlApplicationEngine engine;
   // 注册C++对象到QML引擎
   engine.rootContext()->setContextProperty("sm", sm);
