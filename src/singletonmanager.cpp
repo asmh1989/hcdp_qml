@@ -95,26 +95,26 @@ void SingletonManager::receive()
         QString formattedTime = currentDateTime.toString("hh:mm:ss.zzz");
         QString log;
 
-        log.append("Receive: Time:      " + formattedTime + "\n");
-        log.append("Receive: Base64:    " + frameData + "\n");
+        log.append("ReceTime: " + formattedTime + "\n");
+        // log.append("Receive: Base64:    " + frameData + "\n");
         QByteArray encode = QByteArray::fromBase64(frameData);
-        log.append("Receive: Hex:       " + utils::formatQByte(encode) +
-                   " 解密前\n");
+        // log.append("Receive: Hex:       " + utils::formatQByte(encode) +
+        //            " 解密前\n");
         QAESEncryption decryption(QAESEncryption::AES_128, QAESEncryption::ECB,
                                   QAESEncryption::PKCS7);
         QByteArray crcData2 =
             decryption.decode(encode, globalReadOnlyKey->toUtf8());
         QByteArray crcData =
             QAESEncryption::RemovePadding(crcData2, QAESEncryption::PKCS7);
-        log.append("Receive: Hex:       " + utils::formatQByte(crcData) + "\n");
+        // log.append("Receive: Hex:       " + utils::formatQByte(crcData) + "\n");
         //                qDebug()<<log.toUtf8().constData();
 
         auto s = parseCrc(crcData);
         if (s.circle)
         {
-          log.append(QString("Receive: Data:      Address:%1   Code:%2   "
-                             "Quantity:%3   TimeStamp:%4   Data:%5\n")
-                         .arg(s.addr, s.code, s.quantity, s.time, s.data));
+          // log.append(QString("Receive: Data:      Address:%1   Code:%2   "
+          //                    "Quantity:%3   TimeStamp:%4   Data:%5\n")
+          //                .arg(s.addr, s.code, s.quantity, s.time, s.data));
         }
         else
         {
@@ -218,7 +218,7 @@ QString SingletonManager::sendData(QString addr, QString code, QString data2,
   QDateTime currentDateTime = QDateTime::currentDateTime();
   QString formattedTime = currentDateTime.toString("hh:mm:ss.zzz");
 
-  log.append("Send: Time:         " + formattedTime + "\n");
+  log.append("SendTime: " + formattedTime + " ====================== \n");
 
   uint32_t timeS =
       static_cast<uint32_t>(currentDateTime.toMSecsSinceEpoch() / 1000);
@@ -240,7 +240,7 @@ QString SingletonManager::sendData(QString addr, QString code, QString data2,
   s_data.append(data);
 
   auto s_byte = utils::convertQStringToByteArray(s_data);
-  log.append("Send: Hex:          " + utils::formatQByte(s_byte) + "\n");
+  // log.append("Send: Hex:          " + utils::formatQByte(s_byte) + "\n");
 
   QByteArray crcData = utils::calculate_modbus_crc(s_byte);
 
@@ -251,7 +251,7 @@ QString SingletonManager::sendData(QString addr, QString code, QString data2,
   QByteArray encryptedData =
       encryption.encode(crcData, globalReadOnlyKey->toUtf8());
   //    qDebug()<<"aes: " << utils::formatQByte(encryptedData);
-  log.append("Send: AllHex:       " + utils::formatQByte(encryptedData) + "\n");
+  // log.append("Send: AllHex:       " + utils::formatQByte(encryptedData) + "\n");
 
   // Encode the encrypted data using base64 encoding
   QByteArray base64Data = encryptedData.toBase64();
@@ -260,7 +260,7 @@ QString SingletonManager::sendData(QString addr, QString code, QString data2,
   QByteArray finalData = "$" + base64Data + "\r";
   //    qDebug() << "Final Data:" << finalData;
 
-  log.append("Send: Base64:       " + finalData + "\n");
+  // log.append("Send: Base64:       " + finalData + "\n");
 
   //    qDebug()<<log.toUtf8().constData();
 

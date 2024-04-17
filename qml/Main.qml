@@ -7,7 +7,7 @@ Window {
     height: 640
     visible: true
     title: qsTr("hcdp客户端")
-    x: 0
+    // x: 0
 
     readonly property int margin: 10
 
@@ -37,6 +37,7 @@ Window {
             }
 
             Footer {
+                id: footer
                 anchors.top: content.bottom
                 anchors.topMargin: margin
                 anchors.bottom: parent.bottom

@@ -94,27 +94,41 @@ Rectangle {
             onClicked: sm.clearCache()
         }
 
-        Button {
+        // Button {
+        //     height: parent.height
+        //     width: 80
+        //     anchors.verticalCenter: parent.verticalCenter
+        //     text: qsTr("SelectFile")
+        //     onClicked: () => {
+        //         // 打开文件选择对话框
+        //         fileDialog.open();
+        //     }
+        // }
+
+        ComboBox {
+            id: intervalT
+            width: 60
             height: parent.height
-            width: 80
             anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("SelectFile")
-            onClicked: () => {
-                // 打开文件选择对话框
-                fileDialog.open();
-            }
+            currentIndex: 2
+            model: [30, 50, 60, 80, 100, 150, 200]
         }
 
         Button {
             height: parent.height
             width: 70
-            enabled: !timer.running
+            // enabled: !timer.running
             anchors.verticalCenter: parent.verticalCenter
             text: qsTr("AutoRun")
             onClicked: () => {
                 if (!timer.running) {
                     times = 0;
                     timer.start();
+                                        sm.serialData("start\n")
+
+                } else {
+                    timer.stop();
+                    sm.serialData("stop\n")
                 }
             }
         }
@@ -123,11 +137,12 @@ Rectangle {
             id: timer
             triggeredOnStart: true
             repeat: true
-            interval: 1500
+            interval: intervalT.currentValue
             onTriggered: () => {
                 var d = sm.serialDataList;
-                if (times < d.length) {
-                    var c = d[times];
+                if (times < 1000) {
+                    var c = d[times % d.length];
+                    console.log(" send times = "+ times);
                     var res = sm.sendData(c.addr, c.code, c.data, false);
                     if (res.length !== 0) {
                         sm.showGlobalToast(res);
@@ -136,8 +151,10 @@ Rectangle {
                     } else {
                         times += 1;
                     }
-                } else if (times === d.length) {
-                    sm.showGlobalToast("auto send " + d.length + " sussess!!");
+                } else  {
+                    sm.showGlobalToast("auto send " + times + " sussess!!");
+                    sm.serialData("auto send " + times + " sussess!!\n")
+
                     timer.stop();
                 }
             }
