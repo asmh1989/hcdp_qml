@@ -8,7 +8,6 @@ Rectangle {
     border.width: 1
     radius: 4
 
-    property bool isOpen: false
     property int times: 0
 
     Row {

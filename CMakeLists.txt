@@ -35,6 +35,7 @@ qt_add_qml_module(apphcdp
     QML_FILES qml/Toast.qml
     SOURCES src/utils.h src/utils.cpp
     SOURCES src/model.h
+    QML_FILES qml/FooterStatus.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

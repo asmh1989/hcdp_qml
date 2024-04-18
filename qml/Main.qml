@@ -11,6 +11,13 @@ Window {
 
     readonly property int margin: 10
 
+    property int cellWidth: 50
+    property bool isOpen: false
+
+    property int sendFrames: 0
+    property int recvFrames: 0
+    property int errorFrames: 0
+
     ToastManager {
         id: toast
     }
@@ -37,9 +44,16 @@ Window {
             }
 
             Footer {
-                id: footer
                 anchors.top: content.bottom
                 anchors.topMargin: margin
+                anchors.bottom: parent.bottom
+                anchors.bottomMargin: ss.height + 10
+                width: parent.width
+            }
+
+            FooterStatus {
+                id: ss
+                height: 20
                 anchors.bottom: parent.bottom
                 width: parent.width
             }
@@ -50,6 +64,13 @@ Window {
     Component.onCompleted: {
     }
 
+    onIsOpenChanged: {
+        if(isOpen){
+            sendFrames = 0
+            recvFrames = 0
+            errorFrames = 0
+        }
+    }
 
     Connections {
         target: sm

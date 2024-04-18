@@ -3,9 +3,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 
-
-
-Rectangle{
+Rectangle {
     color: 'transparent'
     border.color: '#50A0FF'
     border.width: 1
@@ -23,7 +21,7 @@ Rectangle{
             width: parent.width
             height: parent.height
 
-            Rectangle{
+            Rectangle {
                 id: left
                 border.color: 'black'
                 border.width: 1
@@ -31,8 +29,7 @@ Rectangle{
 
                 height: parent.height
                 anchors.left: parent.left
-                width: parent.width* 0.45
-
+                width: parent.width * 0.3
 
                 ListView {
                     id: listView
@@ -66,29 +63,25 @@ Rectangle{
                             width: parent.width
                             color: 'gray'
                         }
-
                     }
                     headerPositioning: ListView.OverlayHeader
 
                     model: sm.saveSerialDataList
                     //modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
-                    delegate:
-                        Item {
+                    delegate: Item {
                         width: parent.width
                         height: 20
 
-
                         Rectangle {
-                            id:rectangle
+                            id: rectangle
                             width: parent.width
-                            height: parent.height -1
+                            height: parent.height - 1
                             // 根据选中状态设置背景颜色
                             color: listView.currentIndex === index ? "lightblue" : "white"
 
                             Text {
-                                text: modelData.name+"_"+modelData.addr+"_"+modelData.code+"_"+modelData.data
-
-
+                                text: modelData.name + "_" + modelData.addr + "_"
+                                      + modelData.code + "_" + modelData.data
                             }
 
                             MouseArea {
@@ -96,18 +89,17 @@ Rectangle{
                                 anchors.fill: parent
                                 acceptedButtons: Qt.LeftButton | Qt.RightButton
 
-                                onClicked: (mouse) => {
+                                onClicked: mouse => {
                                                if (mouse.button === Qt.LeftButton) {
-                                                   listView.currentIndex = index;
-                                               } else if (mouse.button === Qt.RightButton && listView.currentIndex == index ) {
+                                                   listView.currentIndex = index
+                                               } else if (mouse.button === Qt.RightButton
+                                                          && listView.currentIndex == index) {
                                                    // 计算鼠标点击的位置，并将位置信息传递给Menu
-                                                   contextMenu.x = mouseArea.mouseX;
-                                                   contextMenu.y = mouseArea.mouseY;
-                                                   contextMenu.open();
+                                                   contextMenu.x = mouseArea.mouseX
+                                                   contextMenu.y = mouseArea.mouseY
+                                                   contextMenu.open()
                                                }
-
                                            }
-
                             }
 
                             Menu {
@@ -117,7 +109,7 @@ Rectangle{
                                     onTriggered: {
                                         var d = sm.serialDataList
                                         d = [modelData, ...d]
-                                        sm.serialDataList =  d
+                                        sm.serialDataList = d
                                     }
                                 }
                                 MenuItem {
@@ -125,7 +117,7 @@ Rectangle{
                                     onTriggered: {
                                         var d = sm.saveSerialDataList
                                         d.splice(listView.currentIndex, 1)
-                                        sm.saveSerialDataList =  d
+                                        sm.saveSerialDataList = d
                                     }
                                 }
                             }
@@ -135,7 +127,10 @@ Rectangle{
                             State {
                                 name: "selected"
                                 when: listView.currentIndex === index
-                                PropertyChanges { target: rectangle; color: "lightblue" }
+                                PropertyChanges {
+                                    target: rectangle
+                                    color: "lightblue"
+                                }
                             }
                         ]
 
@@ -143,7 +138,10 @@ Rectangle{
                             from: "*"
                             to: "selected"
                             reversible: true
-                            ColorAnimation { properties: "color"; duration: 200 }
+                            ColorAnimation {
+                                properties: "color"
+                                duration: 200
+                            }
                         }
 
                         Rectangle {
@@ -153,20 +151,17 @@ Rectangle{
                             color: 'gray'
                         }
                     }
-
-
                 }
             }
 
-
-            Rectangle{
+            Rectangle {
                 border.color: '#50A0FF'
                 border.width: 1
                 anchors.left: left.right
                 anchors.leftMargin: 4
                 radius: 4
                 height: parent.height
-                width: parent.width * 0.55 - 6
+                width: parent.width * 0.7 - 6
 
                 ScrollView {
                     anchors.fill: parent
@@ -181,8 +176,6 @@ Rectangle{
                         selectByMouse: true
                     }
                 }
-
-
             }
         }
     }
@@ -192,15 +185,14 @@ Rectangle{
 
         function onSerialData(msg) {
 
-            if (msg.length === 0) {  // clear
+            if (msg.length === 0) {
+                // clear
                 area.text = ""
             } else {
                 area.text += msg
                 // area.text += "...................................................................\n"
-                area.cursorPosition = area.length-1
+                area.cursorPosition = area.length - 1
             }
-
         }
     }
-
 }
