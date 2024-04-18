@@ -12,7 +12,7 @@ Rectangle {
 
         Row {
             Layout.fillHeight: true
-            Layout.preferredWidth: cellWidth * 2
+            Layout.preferredWidth: cellWidth * 2.4
             Text {
                 text: "SendFrames: "
                 anchors.verticalCenter: parent.verticalCenter
@@ -25,7 +25,7 @@ Rectangle {
         }
         Row {
             Layout.fillHeight: true
-            Layout.preferredWidth: cellWidth * 2
+            Layout.preferredWidth: cellWidth * 2.4
             Text {
                 text: "RxFrames: "
                 anchors.verticalCenter: parent.verticalCenter
@@ -126,9 +126,9 @@ Rectangle {
             if (msg.includes("Send")) {
                 sendFrames += 1
             } else if (msg.includes("Recv")) {
-                recvFrames += 0
+                recvFrames += 1
             } else if (msg.includes("ERROR")) {
-                errorFrames += 0
+                errorFrames += 1
             }
         }
     }
