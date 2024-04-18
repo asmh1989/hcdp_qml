@@ -135,10 +135,11 @@ Rectangle {
         Timer {
             id: timer
             triggeredOnStart: true
-            repeat: true
+            repeat: isOpen
             interval: intervalT.currentValue
             onTriggered: () => {
                 var d = sm.serialDataList;
+
                 if (times < 1000) {
                     var c = d[times % d.length];
                     console.log(" send times = "+ times);
