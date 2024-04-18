@@ -118,7 +118,7 @@ Rectangle {
             width: 70
             // enabled: !timer.running
             anchors.verticalCenter: parent.verticalCenter
-            text: qsTr("AutoRun")
+            text: timer.running ? "Stop": qsTr("AutoRun")
             onClicked: () => {
                 if (!timer.running) {
                     times = 0;

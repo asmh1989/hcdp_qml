@@ -110,7 +110,7 @@ void SingletonManager::receive() {
           //                    "Quantity:%3   TimeStamp:%4   Data:%5\n")
           //                .arg(s.addr, s.code, s.quantity, s.time, s.data));
         } else {
-          log.append("Receive: Data:      ERROR!!\n");
+          log.append("ReceiveData:      ERROR!!\n");
         }
 
         emit serialData(log);

@@ -41,7 +41,7 @@ Rectangle {
             Layout.preferredWidth: cellWidth * 2
 
             Text {
-                text: "RxError: "
+                text: "RxErrors: "
                 anchors.verticalCenter: parent.verticalCenter
             }
 
@@ -125,10 +125,13 @@ Rectangle {
         function onSerialData(msg) {
             if (msg.includes("Send")) {
                 sendFrames += 1
-            } else if (msg.includes("Recv")) {
-                recvFrames += 1
-            } else if (msg.includes("ERROR")) {
-                errorFrames += 1
+            } else {
+                if (msg.includes("Recv")) {
+                    recvFrames += 1
+                }
+                if (msg.includes("ERROR")) {
+                    errorFrames += 1
+                }
             }
         }
     }
