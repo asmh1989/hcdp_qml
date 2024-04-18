@@ -51,6 +51,36 @@ Rectangle {
             }
         }
 
+        Row {
+            Layout.fillHeight: true
+            Layout.preferredWidth: cellWidth * 2
+
+            Text {
+                text: "sendFreg: "
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Text {
+                text: sendFreq
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
+        Row {
+            Layout.fillHeight: true
+            Layout.preferredWidth: cellWidth * 2
+
+            Text {
+                text: "recvFreg: "
+                anchors.verticalCenter: parent.verticalCenter
+            }
+
+            Text {
+                text: recvFreg
+                anchors.verticalCenter: parent.verticalCenter
+            }
+        }
+
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -123,14 +153,29 @@ Rectangle {
         target: sm
 
         function onSerialData(msg) {
+            var nn = new Date().getTime()
+
             if (msg.includes("Send")) {
                 sendFrames += 1
+                if (sendTime === 0) {
+                    sendTime = new Date().getTime()
+                } else {
+                    sendFreq = nn - sendTime
+                    sendTime = nn
+                }
             } else {
                 if (msg.includes("Recv")) {
                     recvFrames += 1
-                }
-                if (msg.includes("ERROR")) {
-                    errorFrames += 1
+                    if (msg.includes("ERROR")) {
+                        errorFrames += 1
+                    }
+
+                    if (recvTime === 0) {
+                        recvTime = new Date().getTime()
+                    } else {
+                        recvFreg = nn - recvTime
+                        recvTime = nn
+                    }
                 }
             }
         }

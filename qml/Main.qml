@@ -18,6 +18,13 @@ Window {
     property int recvFrames: 0
     property int errorFrames: 0
 
+    property int sendFreq: 0
+    property int averageSendFreg: 0
+    property int recvFreg: 0
+    property int averageRecvFreg: 0
+    property int sendTime: 0
+    property int recvTime: 0
+
     ToastManager {
         id: toast
     }
@@ -69,6 +76,10 @@ Window {
             sendFrames = 0
             recvFrames = 0
             errorFrames = 0
+            sendTime = 0
+            recvTime = 0
+            sendFreq = 0
+            recvFreg = 0
         }
     }
 

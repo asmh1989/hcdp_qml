@@ -39,9 +39,9 @@ Rectangle {
             text: qsTr("Refresh")
 
             onClicked: () => {
-                //                           console.log("refresh ...")
-                port.model = sm.getSerialPortList();
-            }
+                           //                           console.log("refresh ...")
+                           port.model = sm.getSerialPortList()
+                       }
         }
 
         GrayLabel {
@@ -65,24 +65,25 @@ Rectangle {
             anchors.verticalCenter: parent.verticalCenter
             text: qsTr("OpenSerial")
             onClicked: () => {
-                if (port.model.length === 0) {
-                    sm.showGlobalToast("no serial port found!!");
-                    return;
-                }
-                if (!isOpen) {
-                    var res = sm.openSerialPort(port.currentIndex, rate.currentValue);
-                    if (res.length === 0) {
-                        isOpen = true;
-                        btn.text = "CloseSerial";
-                    } else {
-                        sm.showGlobalToast(res);
-                    }
-                } else {
-                    sm.closeSerialPort();
-                    isOpen = false;
-                    btn.text = "OpenSerial";
-                }
-            }
+                           if (port.model.length === 0) {
+                               sm.showGlobalToast("no serial port found!!")
+                               return
+                           }
+                           if (!isOpen) {
+                               var res = sm.openSerialPort(port.currentIndex,
+                                                           rate.currentValue)
+                               if (res.length === 0) {
+                                   isOpen = true
+                                   btn.text = "CloseSerial"
+                               } else {
+                                   sm.showGlobalToast(res)
+                               }
+                           } else {
+                               sm.closeSerialPort()
+                               isOpen = false
+                               btn.text = "OpenSerial"
+                           }
+                       }
         }
 
         Button {
@@ -103,7 +104,6 @@ Rectangle {
         //         fileDialog.open();
         //     }
         // }
-
         ComboBox {
             id: intervalT
             width: 60
@@ -118,18 +118,21 @@ Rectangle {
             width: 70
             // enabled: !timer.running
             anchors.verticalCenter: parent.verticalCenter
-            text: timer.running ? "Stop": qsTr("AutoRun")
+            text: timer.running ? "Stop" : qsTr("AutoRun")
             onClicked: () => {
-                if (!timer.running) {
-                    times = 0;
-                    timer.start();
-                                        sm.serialData("start\n")
-
-                } else {
-                    timer.stop();
-                    sm.serialData("stop\n")
-                }
-            }
+                           if (!timer.running) {
+                               times = 0
+                               timer.start()
+                               sendTime = 0
+                               recvTime = 0
+                               sendFreq = 0
+                               recvFreg = 0
+                               sm.serialData("start\n")
+                           } else {
+                               timer.stop()
+                               sm.serialData("stop\n")
+                           }
+                       }
         }
 
         Timer {
@@ -138,33 +141,36 @@ Rectangle {
             repeat: isOpen
             interval: intervalT.currentValue
             onTriggered: () => {
-                var d = sm.serialDataList;
+                             var d = sm.serialDataList
 
-                if (times < 1000) {
-                    var c = d[times % d.length];
-                    console.log(" send times = "+ times);
-                    var res = sm.sendData(c.addr, c.code, c.data, false);
-                    if (res.length !== 0) {
-                        sm.showGlobalToast(res);
-                        timer.stop();
-                        return;
-                    } else {
-                        times += 1;
-                    }
-                } else  {
-                    sm.showGlobalToast("auto send " + times + " sussess!!");
-                    sm.serialData("auto send " + times + " sussess!!\n")
+                             if (times < 1000) {
+                                 var c = d[times % d.length]
+                                 console.log(" send times = " + times)
+                                 var res = sm.sendData(c.addr, c.code,
+                                                       c.data, false)
+                                 if (res.length !== 0) {
+                                     sm.showGlobalToast(res)
+                                     timer.stop()
+                                     return
+                                 } else {
+                                     times += 1
+                                 }
+                             } else {
+                                 sm.showGlobalToast(
+                                     "auto send " + times + " sussess!!")
+                                 sm.serialData(
+                                     "auto send " + times + " sussess!!\n")
 
-                    timer.stop();
-                }
-            }
+                                 timer.stop()
+                             }
+                         }
         }
 
         function delay(delayTime, cb) {
-            timer.interval = delayTime;
-            timer.repeat = false;
-            timer.triggered.connect(cb);
-            timer.start();
+            timer.interval = delayTime
+            timer.repeat = false
+            timer.triggered.connect(cb)
+            timer.start()
         }
 
         FileDialog {
@@ -174,18 +180,18 @@ Rectangle {
             //            folder: shortcuts.home // 设置默认文件夹
             onAccepted: {
                 // 用户选择了文件
-                console.log("Selected file:", fileDialog.selectedFile);
-                var res = sm.selectFile(fileDialog.selectedFile);
+                console.log("Selected file:", fileDialog.selectedFile)
+                var res = sm.selectFile(fileDialog.selectedFile)
                 if (res.length !== 0) {
-                    sm.showToast(res);
+                    sm.showToast(res)
                 } else {
-                    sm.showToast("load success!");
+                    sm.showToast("load success!")
                 }
             }
 
             onRejected: {
                 // 用户取消选择文件
-                console.log("File selection canceled");
+                console.log("File selection canceled")
             }
         }
 
@@ -204,18 +210,19 @@ Rectangle {
 
             onCurrentIndexChanged: {
                 // 当用户改变了ComboBox的选择时，更新someValue的值
-                var now = scale.model[currentIndex];
+                var now = scale.model[currentIndex]
                 if (now !== sm.getScaleCache()) {
-                    sm.setScaleCache(now + "");
-                    sm.showGlobalToast("scale = " + now + " 重启生效!");
+                    sm.setScaleCache(now + "")
+                    sm.showGlobalToast("scale = " + now + " 重启生效!")
                 }
             }
 
             Component.onCompleted: () => {
-                var now = sm.getScaleCache();
-                console.log(" now = " + now);
-                scale.currentIndex = scale.model.indexOf(now);
-            }
+                                       var now = sm.getScaleCache()
+                                       console.log(" now = " + now)
+                                       scale.currentIndex = scale.model.indexOf(
+                                           now)
+                                   }
         }
 
         //        CheckBox {
